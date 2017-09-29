@@ -21,25 +21,37 @@ Home Page Components
       
       - Direction google map
   
-About US Page
-  Top Navigation
-  One component with slots
+About US Components
+
+  - Top Navigation
   
-Ministries
-  Logos
-  Ministry
-    Banner Image
-    Leader Image
-    Ministry Info (could use slots)
+  - One component with slots
+  
+Ministries Components
+
+  - Logos
+  
+  - Ministry
+  
+    - Banner Image
     
-Contact
-  Contact Information
+    - Leader Image
+    
+    - Ministry Info (could use slots)
+    
+Contact Components
+
+  - Contact Information
   
-MyBTCOG
-  Register/login
-  My Preferences
-  My Information
-  My Contributions
+MyBTCOG Components
+
+  - Register/login
+  
+  - My Preferences
+  
+  - My Information
+  
+  - My Contributions
 
 Give online
   
