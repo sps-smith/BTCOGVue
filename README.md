@@ -1,17 +1,17 @@
 # BTCOGVue
 
 Home Page Components
-  Carousel
+  - Carousel
   
-  Church Information
+  - Church Information
   
-  Banner - Come and grow with us
+  - Banner - Come and grow with us
   
-  Convention & Events
+  - Convention & Events
   
-  This week at BTCOG
+  - This week at BTCOG
   
-  Video
+  - Video
   
   Directions
     Image
