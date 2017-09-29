@@ -13,10 +13,13 @@ Home Page Components
   
   - Video
   
-  Directions
-    Image
-    Direction
-    Direction google map
+  - Directions
+  
+      - Image
+      
+      - Direction
+      
+      - Direction google map
   
 About US Page
   Top Navigation
