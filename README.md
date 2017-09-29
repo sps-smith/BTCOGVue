@@ -2,11 +2,17 @@
 
 Home Page Components
   Carousel
+  
   Church Information
+  
   Banner - Come and grow with us
+  
   Convention & Events
+  
   This week at BTCOG
+  
   Video
+  
   Directions
     Image
     Direction
