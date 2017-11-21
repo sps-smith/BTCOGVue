@@ -1,0 +1,841 @@
+<!-- <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap@next/dist/css/bootstrap.min.css"/>
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/> -->
+<div id="aboutcontent">
+    <about-nav :selected-about="currentSelected"></about-nav>
+    <div  class="main" >
+            <our-pastors :johnbio="johnBio" :oneilbio="oneilBio"></our-pastors>
+            <our-officers></our-officers>
+            <our-vision></our-vision>
+            <our-mission></our-mission>
+            <our-values></our-values>
+            <our-belief></our-belief>
+            <our-history></our-history>
+    </div>
+</div>
+
+<script src="//unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+<script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+<script>
+
+Vue.component("about-nav", {
+    template: '<b-navbar class="aboutnav" toggleable="lg" type="dark" variant="" >\
+        <b-nav-toggle target="nav_collapse"></b-nav-toggle>\
+            <b-collapse is-nav id="nav_collapse">\
+                <b-nav is-nav-bar>\
+                    <b-nav-item :class="{ aboutselected: isPastor}" href="#pastors"  @click="showabout">Our Pastors</b-nav-item>\
+                    <b-nav-item :class="{ aboutselected: isOfficer}" href="#officers"  @click="showabout">Our Officers</b-nav-item>\
+                    <b-nav-item :class="{ aboutselected: isVision}" href="#vision" @click="showabout">Our Vision</b-nav-item>\
+                    <b-nav-item :class="{ aboutselected: isMission}" href="#mission" @click="showabout">Our Mission</b-nav-item>\
+                    <b-nav-item :class="{ aboutselected: isValues}" href="#values" @click="showabout">Our Values</b-nav-item>\
+                    <b-nav-item :class="{ aboutselected: isBelief}" href="#belief" @click="showabout">Our Beliefs</b-nav-item>\
+                    <b-nav-item :class="{ aboutselected: isHistory}" href="#history" @click="showabout">History of Brampton Triumphant</b-nav-item>\
+                </b-nav>\
+            </b-collapse>\
+        </b-navbar>',
+    props:["selectedAbout"],
+    methods:{
+        showabout(event){
+            var hf = event.srcElement.attributes["href"].value;
+            var top = $(hf).position().top;
+            var curPos = $("div.main").scrollTop();
+            $("section").animate({
+                scrollTop: curPos + top - 60
+            },2000);
+            vmAbout.currentSelected = hf.split("#")[1];
+        }
+    },
+    computed:{
+        isPastor: function()
+        {
+            if (this.selectedAbout == "pastors")
+                return true;
+            else
+                return false;
+        },
+        isOfficer: function()
+        {
+            if (this.selectedAbout == "officers")
+                return true;
+            else
+                return false;
+        },
+        isVision: function()
+        {
+            if (this.selectedAbout == "vision")
+                return true;
+            else
+                return false;
+        },
+        isMission: function()
+        {
+            if (this.selectedAbout == "mission")
+                return true;
+            else
+                return false;
+        },
+        isValues: function()
+        {
+            if (this.selectedAbout == "values")
+                return true;
+            else
+                return false;
+        },
+        isBelief: function()
+        {
+            if (this.selectedAbout == "belief")
+                return true;
+            else
+                return false;
+        },
+        isHistory: function()
+        {
+            if (this.selectedAbout == "history")
+                return true;
+            else
+                return false;
+        }
+    }
+});
+
+Vue.component("our-pastors", {
+    template:'<div id="pastors">\
+                <h2>Our Pastors</h2>\
+                <div class="pastors">\
+                    <div class="pastorjohn">\
+                        <div>\
+                            <img src="../siteassets/Images/mom_dad2017.JPG" class="img-responsive" />\
+                        </div>\
+                        <div class="pContent">\
+                            <h5>Senior Pastor - Rev. Dr. John A. Walker & Mother Joyce Walker</h5>\
+                            <div v-html="johnbio"></div>\
+                        </div>\
+                        <b-button class="btn btn-info readmore" @click="showmore" variant="link">Read more about Pastor John Walker</b-button>\
+                    </div>\
+                    <div class="pastoroneil">\
+                        <div>\
+                            <img src="../siteassets/Images/oneilsandra.JPG" class="img-responsive" />\
+                        </div>\
+                        <div class="pContent">\
+                            <h5>Associate Pastor Rev. Dr. O\'Neil K. Walker & Lady Sandra Walker</h5>\
+                            <div v-html="oneilbio"></div>\
+                        </div>\
+                        <b-button type="button" class="btn btn-info readmore" @click="showmore" variant="link">Read more about Pastor O\'Neil Walker</b-button>\
+                    </div>\
+                </div>\
+                <hr>\
+                <b-modal ref="modallg" size="lg" :title="pastorTitle" >\
+                    <div slot="modal-header"><h2>{{pastorTitle}}</h2></div>\
+                    <div class="modaldiv" v-html="content"></div>\
+                    <div slot="modal-footer"><b-button class="btn btn-alert" @click="closemodal">Close</b-button></div>\
+                </b-modal>\
+            </div>',
+    data(){
+        return{
+            content:"",
+            pastorTitle: ""
+        }
+    },
+    props:["johnbio", "oneilbio"],
+    methods:{
+        showmore: function(){
+            var tl = event.srcElement.parentElement.className;
+            if (tl == "pastoroneil")
+                this.pastorTitle = "Pastor O'Neil Walker"
+            else
+                this.pastorTitle = "Pastor John Walker"
+            this.content = event.srcElement.parentElement.innerHTML
+            this.$refs.modallg.show();
+        },
+        closemodal(){
+            this.$refs.modallg.hide();
+        }
+    }
+});
+
+Vue.component("our-officers",{
+    template:'<div id="officers">\
+                    <h2>Our Officers</h2>\
+                    <div class="officers">\
+                        <div>\
+                            <img src="../siteassets/Images/oneil1.JPG" class="img-responsive" />\
+                            <ul>\
+                                <li>Pastor: Rev. Dr. O\'Neil Walker</li>\
+                                <li><a href="mailto:evgokwalker@hotmail.com&subject=Attention: Pastor O\'Neil Walker">evgokwalker@hotmail.com</a>\
+                                </li>\
+                            </ul>\
+                        </div>\
+                        <div>\
+                            <img src="../siteassets/Images/marlene1.JPG" class="img-responsive" />\
+                            <ul>\
+                                <li>Evangelist: Marlene Rhoden</li>\
+                                <li><a href="mailto:bramptontriumphant@gmail.com&subject=Attention: Evangelist Marlene Rhoden">bramptontriumphant@gmail.com</a>\
+                                </li>\
+                            </ul>\
+                        </div>\
+                        <div>\
+                            <img src="../siteassets/Images/georgia.JPG" class="img-responsive" />\
+                            <ul>\
+                                <li>Secretary: Georgia Pryce</li>\
+                                <li><a href="mailto:pryce2@sympatico.ca&subject=Attention: Secretary Georgia Pryce">pryce2@sympatico.ca</a>\
+                                </li>\
+                            </ul>		\
+                        </div>	\
+                        <div>\
+                            <img src="../siteassets/Images/maniram.JPeG" class="img-responsive" />\
+                            <ul>\
+                                <li>Evangelist: Maniram Roopnarine</li>\
+                                <li><a href="mailto:bramptontriumphant@gmail.com&subject=Attention: Evangelist Maniram Roopnarine">bramptontriumphant@gmail.com</a>\
+                                </li>\
+                            </ul>		\
+                        </div>	\
+                        <div>\
+                            <img src="../siteassets/Images/terrence.JPG" class="img-responsive" />\
+                            <ul>\
+                                <li>Exhorter: Terrence Pryce</li>\
+                                <li><a href="mailto:bramptontriumphant@gmail.com&subject=Attention: Exhorter Terrence Pryce">bramptontriumphant@gmail.com</a>\
+                                </li>\
+                            </ul>		\
+                        </div>	\
+                        <div>\
+                            <img src="../siteassets/Images/michaeljackson.JPeG" class="img-responsive" />\
+                            <ul>\
+                                <li>Exhorter: Michael Jackson</li>\
+                                <li><a href="mailto:bramptontriumphant@gmail.com&subject=Attention: Exhorter Michael Jackson">bramptontriumphant@gmail.com</a>\
+                                </li>\
+                            </ul>		\
+                        </div>	\
+                    </div>\
+                    <hr>\
+            </div>'
+});
+
+Vue.component("our-vision",{
+    template:'<div id="vision">\
+                <h2>Our Vision</h2>\
+                <div class="vision">\
+                    <p>It is our vision to take the Triumphant Church of God to the "next level" in essence, to a higher \
+                        spiritual and numerical plane. We aim to be a soul-oriented and missionary church and the church - as a living \
+                        organism - will be the centre of deliverance, setting free those who are bound, broken-hearted and sick. \
+                        We strive to be a church where the destitute can find refuge and strength.\
+                    </p>\
+                </div>\
+                <hr>\
+            </div>'
+});
+
+Vue.component("our-mission",{
+    template:'<div id="mission">\
+                <h2>Our Mission</h2>\
+                <div class="mission">\
+                        <p>It is our mission to create an environment that will be conductive to spiritual and numerical growth. \
+                            It will be an "inner court experience" where the people will be continually ushered into the presence of the Lord \
+                            during worship services. We will build healthy relationships, and renew our covenant with God daily.\
+                        </p>\
+                </div>\
+                <hr>\
+            </div>'
+});
+
+Vue.component("our-values",{
+    template:'<div id="values">\
+                <h2>Our Values</h2>\
+                <div class="values">\
+                    <div>\
+                        <img src="../siteassets/Images/conversion.jpg" class="img-responsive" />\
+                        <p>That souls be converted to Christianity and mature in their relationship with God</p>\
+                    </div>\
+                    <div>\
+                        <img src="../siteassets/Images/christ-centered-relationship.jpg" class="img-responsive" />\
+                        <p>Committed to steadfast loving, interest and interaction of one another</p>\
+                    </div>\
+                    <div>\
+                        <img src="../siteassets/Images/worship.jpg" class="img-responsive" />\
+                        <p>Deepened individually and collectively</p>\
+                    </div>\
+                    <div>\
+                        <img src="../siteassets/Images/preaching.jpg" class="img-responsive" />\
+                        <p>Inspired, biblically-based, and applicable for proactive living</p>\
+                    </div>\
+                    <div>\
+                        <img src="../siteassets/Images/growth.jpg" class="img-responsive" />\
+                        <p> Manifested spiritually, numerically and financially</p>\
+                    </div>\
+                    <div>\
+                        <img src="../siteassets/Images/ministry.jpg" class="img-responsive" />\
+                        <p> Discovered and nurtured in lives and in the Church</p>\
+                    </div>\
+                    <div>\
+                        <img src="../siteassets/Images/unity.jpg" class="img-responsive" />\
+                        <p> Evident in love to fullfill the Great Commission</p>\
+                    </div>\
+                </div>\
+                <hr>\
+            </div>'
+});
+
+Vue.component("our-belief",{
+    template:'<div id="belief">\
+                <h2>Our Beliefs</h2>\
+                <div class="belief">\
+                    <ul class="list-group">\
+                        <li class="list-group-item">In the verbal inspiration of the bible.</li>\
+                        <li class="list-group-item">In one God eternally existing in three persons; namely, the Father, Son, and Holy Ghost.</li>\
+                        <li class="list-group-item">That Jesus Christ is the only begotten Son of the Father, conceived of the Holy Ghost, and born of the Virgin Mary. That Jesus was crucified, \
+                        buried, and raised from the dead. That He ascended to heaven and is today at the right hand of the Father as the Intercessor.</li>\
+                        <li class="list-group-item">That all have sinned and come short of the glory of God and that repentance is commanded of God for all and necessary for forgiveness of sins.</li>\
+                        <li class="list-group-item">That justification, regeneration, and the new birth wrought by faith in the blood of Jesus Christ.</li>\
+                        <li class="list-group-item">In sanctification, subsequent to the new birth, through faith in the blood of Christ; through the Word, and by the Holy Ghost.</li>\
+                        <li class="list-group-item">Holiness to be God\'s standard of living for His people.</li>\
+                        <li class="list-group-item">In the baptism with the Holy Ghost subsequent to a clean heart.</li>\
+                        <li class="list-group-item">In speaking with other tongues as the Spirit gives utterance and that is the initial evidence of the baptism in the Holy Ghost.</li>\
+                        <li class="list-group-item">In water baptism by immersion, and all who repent should be baptized in the name of the Father, and of the Son, and of the Holy Ghost.</li>\
+                        <li class="list-group-item">Divine healing is provided for all Atonement.</li>\
+                        <li class="list-group-item">In the Lord\'s Supper and washing of the saint\'s feet.</li>\
+                        <li class="list-group-item">In the premillennial second coming of Jesus. First, to resurrect the righteous dead and to catch away the living saints to Him in the air. Second, to reign on the earth a thousand years.</li>\
+                        <li class="list-group-item">In the bodily resurrection; eternal life for the righteous, and eternal punishment for the wicked.</li>\
+                    </ul>\
+                </div>\
+                <hr>\
+            </div>'
+});
+
+Vue.component("our-history",{
+    template:'<div id="history">\
+                <h2>History of Brampton Triumphant</h2>\
+                <div class="history">\
+                    <div>\
+                        <p class="historyDate">August 1997</p>\
+                        <p><span class="historyLocation">Bronx, New York, USA - </span> In a heightened, high-energy worship service, \
+                        the spirit of the Lord moved forcefully on Evangelist V. Lawman. The deeper she engaged in worship was the \
+                        greater she was convicted of what God was saying to her. In fullness of faith, she asked Evg. John Walker to \
+                        stand. Complying with hands clasped together, he heard out of God\'s mouthpiece that his (evangelistic) ministry \
+                        was changing. Evg. Walker received word that God was elevating him to the high calling of a pastor. \
+                        The Master\'s chosen servant wept openly while the church rejoiced of what was going to occur in the \
+                        life of His son.</p>\
+                    </div>\
+                    <div>\
+                        <p class="historyDate">June 1998</p>\
+                        <p><span class="historyLocation">Toronto, Ontario, Canada - </span> After much prayer and seeking the will of \
+                        God, Evg. Walker presented his pastor, Bishop J.J Parke, a letter of intent, to extend the Triumphant Church \
+                        of God in the city of Brampton. Bishop Parke obliged, reasoning since the church was seasoned in the central \
+                        and eastern region, and the time had come for the Triumphant Church of God to launch out westward in \
+                        unchartered territory.</p>\
+                    </div>\
+                    <div>\
+                        <p class="historyDate">May 2, 1999</p>\
+                        <p><span class="historyLocation">Brampton, Ontario, Canada - </span> The year of 1999 became the year of change \
+                        and development, and the dawn of a new era. On March 4th, the beloved founder, Bishop Philip Burris passed away \
+                        and on May 2nd, Brampton Triumphant Church of God was born. Evg. Walker began his ministerial voyage as Pastor \
+                        and as prophesied one year and eight months prior. The Youth Room of Chris Gibson Recreation Centre became a \
+                        place of worship as congregants were enriched by corporate praise and challenged by the word of God preached. \
+                        God sent Georgia Pryce (formerly Georgia Morgan from Prayer Palace Ministries) to work alongside Pastor Walker \
+                        as secretary-treasurer and on May 24th, at the Annual Convention, Exhorter O\'Neil K. Walker was appointed as \
+                        BTCOG\'s first Evangelist. Together, they served as members of the Officer\'s Board - a position they hold to \
+                        this day. Saturday, July 10, 1999, BTCOG had their official dedication service in which over 300 worshippers \
+                        from near and far came together to celebrate its future impact in the community and the deposit of the \
+                        gospel into the lives of people. The new millennium was a time of tremendous numerical, financial, and \
+                        spiritual growth. The word of God would be preached under the demonstration of the Holy Ghost and souls \
+                        would be added to the Kingdom of God.</p>\
+                    </div>\
+                    <div>\
+                        <p class="historyDate">2006</p>\
+                        <p><span class="historyLocation">Brampton, Ontario, Canada - </span> Having total reliance upon sovereign \
+                        timing, Pastor Walker led the church in the pursuit of purchasing a building, in the church\'s seventh year \
+                        of existence. With that great accomplishment, came unforeseen setbacks with the city of Brampton as city \
+                        officials blocked all access to churches receiving parking or building permits. A case study had to be \
+                        completed by the city first to determine its impact of churches in the metropolis of Brampton. A timeline \
+                        could not be given upon completion of the case study. Months rolled into years as the future home of BTCOG \
+                        stood as an empty shell, unfurnished, void of furnishings, plumbing, washrooms, and electricity. \
+                        Perhaps at no other time in ministry was the faith of Pastor Walker tested. In private devotion on his knees, \
+                        he wrestled against doubt and naysayers to hear the voice of the Lord clearly. With his heart pricked with \
+                        persuasion to stay on course, Pastor Walker declared he "would be more weight (opposition)" on the condition \
+                        that Jehovah would be with him at that perilous time. Fuelled with the fire of God, Pastor Walker voiced to \
+                        the congregation that having a setback is not the state of defeat, and encouraged the saints to increase \
+                        their faith, and prepare for the overflow of God\'s favour. Not all of the brethren could have dealt with \
+                        the delay and many left the church out of frustration. Nonetheless, a faithful remnant, inspired by the \
+                        Word, challenged God for a breakthrough – to the point of having services in the frigid cold and crying \
+                        out to God along the four corners of the unfitted unit. The cries were not in vain. At the close of 2010, \
+                        the church was approved to for zoning and hope was now materializing into reality.</p>\
+                    </div>\
+                    <div>\
+                        <p class="historyDate">2011</p>\
+                        <p><span class="historyLocation">Brampton, Ontario, Canada - </span> Five years after purchase of the church \
+                        affectionately known as Westwyn (named after the street), major construction began to turn an empty shell into \
+                        a sanctuary for the sovereign God. Pastor Walker was consumed with the spirit of excellence like King Solomon \
+                        and the spirit to build like Noah. He preached on unity on Sunday morning and on Sunday evening, he led the \
+                        charge of members becoming labourers to work alongside of the general contractor, Deacon Leon Sutton, of the \
+                        Assemblies of the First Born Vision Ministries. (Elder Alvanso Honeyghan and Deacon Vermon Pennant receive \
+                        honourable mention for their awe-inspiring contribution.) Night and day, Pastor Walker, with the men and \
+                        women of the church, toiled with the skilled labourers, building a wonderful worship centre for the Lord. \
+                        The task was great, the cost was immense, and the vision was an element that could not be seen out of the \
+                        natural eye. Yet purpose and destiny embraced as on Aug. 13th, 2011, BTCOG was blessed and dedicated for \
+                        service and for souls. Poised for growth and seasoned with the promises of God, Brampton Triumphant Church \
+                        of God strives to be a beacon in the community and a funnel for the outpouring of the Holy Spirit in the \
+                        lives of mankind.</p>\
+                    </div>\
+                </div>\
+            </div>'
+});
+
+var vmAbout = new Vue({
+    el: "#aboutcontent",
+    data(){
+        return {
+            currentSelected: "pastors",
+            johnBio:"<p>If there was a man that was born to serve as a leader in the kingdom of God, Reverend Dr. John Walker was - standing strong,\
+                    and glistening with the anointing of God upon his life.</p>\
+                    <p>Dr. Walker Sr. has been engaged in over 50 years of Christian living and over 40 years \
+                    of proclamation ministry. He answered the call of salvation at the tender age of eleven in \
+                    the district of Lluidas Vale, St. Catherine, Jamaica. It was there, months after his father \
+                    passed away suddenly, that he received divine encounters from his Heavenly Father and grew \
+                    in the grace and knowledge of God. Under the leadership of Pastor B. Walters, a prophetic \
+                    word from the Lord was given to him while still a child: that he would be one of the (leading) men of tomorrow.</p>\
+                    <p>Upon migrating to Toronto, Ontario, Canada in 1971, the Lord led him to the Triumphant Church of God, where his spiritual gifts were affirmed, \
+                    ordained as an evangelist. In his heart, he carried an unbridled zeal and the spirit of excellence as he profoundly preached the gospel across the GTA. </p>\
+                    <p>After nearly 30 years of evangelism, the Lord elevated His son to pastoral ministry in 1999, and the \
+                    Brampton Triumphant Church of God was born May 2nd of the same year. Being a man of extraordinary vision, \
+                    he led the church in the undertaking of a church building, seven years into its ministry. Throughout his pastorate, \
+                    he has received awards for his great contribution towards the betterment of society such as the Spirit Award from ResQ, \
+                    the Community Award from Total Prayz Promotions ‘N’ Ministry, and the Children’s Aid Society Service Award, acknowledging \
+                    20 years as a foster parent with the Peel Children’s Aid Society.</p>\
+                    <p>Always challenging himself and advocating higher learning, he enrolled at Tripp Bible Institute. Upon completion of concentrated study, \
+                    he obtained a Diploma in Biblical Studies, and Theology degrees at the Bachelor, Masters, and Doctorate level. He is a highly \
+                    sought-after keynote speaker who ministers at leadership conferences across the globe. His voice can also be heard over \
+                    the airwaves 105.5 FM praying for the nation of Canada.</p>\
+                    <p>Dr. Walker Sr. presides as Chairman of the National Board of Ministers and is a board affiliate on the Triumphant Church of God’s International Executive Board. \
+                    He remains married to First Lady Joyce Walker and to that union are 4 children and the succeeding generation of 11 grandchildren.</p>\
+                    <p>A man of humble beginnings who has witnessed God doing the miraculous, he encourages mankind to know God as their personal Saviour, and experience the joy only salvation brings.</p>",
+            oneilBio: "<p>Pastor, Evangelist, Author, and Keynote Speaker are a few of the humbling giftings granted to this man of God who has been called and \
+                    conditioned to a life of ministry. In the district of Lluidas Vale, a fruitful region of St. Catherine, Jamaica, his pregnant mother experienced \
+                    labour pains at the altar as she continued steadfast in prayer for her unborn son to follow his father in the path of ministry. It came to pass. </p>\
+                    <p>Praying and laying hands on people at the tender age of 3, it was quite clear to all that the hand of the Lord was upon Him and that God had big plans for his life.</p>\
+                    <p>Dr. Walker is known for his eloquent, expressive, and explosive preaching which has led souls from the raging sea of sin to the peaceful shore of salvation. \
+                    He has travelled extensively across the United States, Jamaica, and the United Kingdom proclaiming the gospel of Jesus Christ. As an author, \
+                    he is critically acclaimed. His book, “Answer the Call: A Comprehensive Look at Christianity and Ministry”, has touched lives and is held in high esteem at\
+                    seminaries and bookstores across the globe. </p>\
+                    <p>Being a student of the Word, he matriculated at Tyndale College University & Seminary and Universal Ministries School of Theology, acquiring a Bachelor’s degree in \
+                    Theology (B.Th) and a Master of Arts degree (M.A) in Sacred Church Philosophy. Engaging in graduate studies at Tripp Bible Institute, \
+                    he earned a Masters degree in Pastoral Ministry and a  Doctorate degree in Pastoral Ministry.</p>\
+                    <p>As the Associate Pastor of Brampton Triumphant Church of God, he serves and labours alongside his father, Rev. Dr. John A. Walker, \
+                    shepherding the church with love, feeding the people with God’s word, and reaffirming the warmth of fellowship. </p>\
+                    <p>Dr. Walker is married to Lady Sandra and to their union are 2 children, Shanelle, and Antonio-John affectionately known as A.J. </p>\
+                    <p>Dr. Walker seeks your prayerful support as He continues to serve the Master and accomplishes the assignment of ministry given to him by the will of God.</p>",
+            lastId:"",
+            topMenu:"",
+            topMenuHeight: "",
+            menuItems: "",
+            scrollItems: ""          
+        }
+    },   
+    mounted: function(){
+        // var lastId,
+        this.topMenu = $(".aboutnav"),
+        this.topMenuHeight = this.topMenu.outerHeight()+15,
+        // All list items
+        this.menuItems = this.topMenu.find("li.nav-item  a"),
+        // Anchors corresponding to menu items
+        this.scrollItems = this.menuItems.map(function(){
+            var item = $($(this).attr("href"));
+            if (item.length) { return item; }
+        });
+        
+        $("section").scroll(function() {
+            // Get container scroll position
+            var fromTop = $(this).scrollTop()+ vmAbout.topMenuHeight;
+            
+            // Get id of current scroll item
+            var cur = vmAbout.scrollItems.map(function(){
+                if ($(this).position().top < fromTop)
+                return this;
+            });
+            // Get the id of the current element
+            cur = cur[cur.length-1];
+            var id = cur && cur.length ? cur[0].id : "";
+            
+            if (vmAbout.lastId !== id) {
+                vmAbout.lastId = id;
+                // Set/remove active class
+                vmAbout.currentSelected = id;
+            }            
+        });
+    }
+});
+
+
+</script>
+
+<style>
+/*Page*/
+.ms-webpart-zone
+{
+    display: block;
+}
+div#aboutcontent
+{
+    position: relative;
+}
+div.main
+{
+    padding-top: 60px;
+    width: 100%;
+    z-index: -1;
+    padding-right: 0;
+    padding-left: 0;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 1140px;
+    margin:auto;
+}
+/*Nav bar*/
+.btn
+{
+    padding:0;
+}
+.aboutnav
+{
+    background: #4D2472;
+    position: fixed;
+    width:100%;
+    padding:.5rem;
+    z-index: 10;
+}
+.navbar-dark .navbar-nav .nav-link
+{
+    color:#fff;
+    text-transform: uppercase;
+    padding:0;
+    padding-bottom: .2rem;
+    border-bottom: 1px solid #4D2472;
+}
+.navbar-dark .navbar-nav .nav-link:hover
+{
+    color:#fff;
+    border-bottom: 1px dotted;
+}
+.navbar-nav
+{
+    max-width: 100%;
+    width: 100%;
+    justify-content: space-around;
+    padding-top:.5rem;
+    padding-bottom: .5rem;
+}
+.aboutselected{
+    border-bottom: 2px solid #fff;
+}
+.navbar-dark .navbar-toggler {
+    color: #fff;
+    border-color: #fff;
+    padding: .5rem;
+    background: transparent;
+}
+button:focus
+{
+    outline: none;
+}
+@media (max-width:991px)
+{
+    .aboutselected
+    {
+        border-bottom: none;
+        width:99%;
+    }
+    .aboutselected a
+    {
+        color:#4D2472 !important;
+        background: #fff;
+        width:98%;
+    }
+    li.nav-item
+    {
+        padding-bottom: 1rem;
+    }
+    li.nav-item
+    {
+        border-bottom: none;
+        width:99%;
+    }
+    .navbar-dark .navbar-nav .nav-link:hover
+    {
+        color:#4D2472 !important;
+        border-bottom: none;
+        background: #fff;
+        width:98%;
+    }
+}
+/*Our Pastors*/
+
+div#pastors h2
+{
+    text-align: center;
+    color:#000;
+}
+div.pastors
+{
+    display: flex;
+    flex-flow: row wrap;
+    padding:10px;
+    background: #fff;
+    justify-content: space-between;
+}
+div.pastorjohn, div.pastoroneil
+{
+    display: flex;
+    flex-direction: column;
+    max-width: 45%;
+    padding:10px;
+}
+div.pastors img
+{
+    max-height: 200px;
+    border-radius: 10px;
+}
+div.pastors h5
+{
+    font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+    text-align: justify;
+    width:100%;
+    text-decoration-line: none;
+    padding-top: 10px;
+    color: #000;
+    font-size: 1rem;
+}
+.pContent
+{
+    max-height: 380px;
+    height: 100%;
+    overflow: hidden;
+}
+.readmore
+{
+    cursor: pointer;
+    margin-top: 10px;
+    font-style: italic;
+    font-size: .9rem;
+}
+@media (max-width:991px)
+{
+    div#pastors
+    {
+        position: relative;
+        margin-top: 0;
+    }
+}
+@media (max-width:520px)
+{
+    div#pastors
+    {
+        position: relative;
+        margin-top: 0;
+    }
+    .container
+    {
+        padding-right: 0;
+        padding-left: 0;
+    }
+    div.pastors
+    {
+        flex-flow: column;
+    }
+    div.pastorjohn, div.pastoroneil
+    {
+        max-width:100%;
+        width:auto;
+    }
+}
+/*Officers*/
+div#officers
+{
+    width: 100%;
+    z-index: -1;
+}
+div#officers h2
+{
+    text-align: center;
+    color:#000;
+}
+div.officers
+{
+    display: flex;
+    -ms-flex-flow:row wrap;
+    -webkit-flex-flow:row wrap;
+    flex-flow: row wrap;
+    padding:10px;
+    background: #fff;
+    justify-content: space-between;
+}
+div.officers img
+{
+	width:200px;
+	border-radius:100px;
+	height:200px;
+}
+div.officers ul
+{
+	list-style:none;
+}
+div.officers div
+{
+    max-width: 300px;
+    width: 100%;
+    text-align: center;
+}
+@media (max-width:620px)
+{
+    div.officers
+    {
+        justify-content: center;
+    }
+}
+/*Modal Box*/
+div.modaldiv
+{
+    display: flex;
+    flex-flow: column;
+}
+div.modaldiv img
+{
+    max-height: 200px;
+    border-radius: 10px;
+}
+div#pastors header
+{
+    height: 24px;
+    margin:0;
+    width:auto;
+}
+div#pastors header h2
+{
+    color:#4D2472;
+    margin-top:3px;
+}
+div.modaldiv h5
+{
+    color:#000;
+    margin: 0;
+    width: 100%;
+    text-align: justify;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-decoration: none;
+}
+div.modaldiv .pContent
+{
+    max-height: 100%;
+    overflow: visible;
+}
+div.modaldiv button
+{
+    display: none;
+}
+.modal-footer button
+{
+    padding:5px;
+}
+@media(max-width:322px)
+{
+    div#pastors h2
+    {
+        font-size:1.5rem;
+    }
+}
+/*Vision*/
+div#vision h2
+{
+    text-align: center;
+    color:#000;
+}
+div.vision
+{
+    padding:10px;
+    background: #fff;
+}
+/*Mission*/
+div#mission h2
+{
+    text-align: center;
+    color:#000;
+}
+div.mission
+{
+    padding:10px;
+    background: #fff;
+}
+/*Values*/
+div.values
+{
+    display: flex;
+    -ms-flex-flow:row wrap;
+    -webkit-flex-flow: row wrap;
+    flex-flow:row wrap;
+    justify-content: space-between;
+    padding:10px;
+    background: #fff;
+}
+div#values h2
+{
+    text-align: center;
+    color:#000;
+}
+div.values div img
+{
+    max-width: 300px;
+    max-height:172px;
+    width:100%;
+}
+div.values div
+{
+    background: lightgrey;
+    padding:10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    max-width: 300px;
+    width:100%;
+
+}
+div.values p
+{
+    text-align: center;
+}
+@media (max-width:620px)
+{
+    div.values
+    {
+        justify-content: center;
+    }
+}
+/*Beliefs*/
+div#belief h2
+{
+    text-align: center;
+    color:#000;
+}
+/*History*/
+div.history
+{
+    padding:10px;
+    background: #fff;
+}
+div#history h2
+{
+    text-align: center;
+    color:#000;
+}
+div#history p.historyDate
+{
+	text-transform:uppercase;
+	font-weight:bold;
+	color:#4d2472;
+	margin-bottom:0 !important;
+}
+.historyLocation
+{
+	font-weight:bold;
+	color:#4d2472;
+}
+div.history div
+{
+    padding-bottom:20px;
+}
+</style>

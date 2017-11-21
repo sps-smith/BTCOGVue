@@ -1,0 +1,537 @@
+<style type="text/css">
+#s4-workspace
+{
+	background-image:url('../siteassets/Images/_DSC1890.jpg');
+	background-size: cover;
+	background-repeat:no-repeat;
+	}
+</style>
+<div id="homePage">
+    <home-page-slider :images="imagesAry" :album-name="albumn"></home-page-slider>  
+    <btcog-information></btcog-information>
+    <banner></banner>
+    <btcog-events :events-data="events"></btcog-events>
+    <btcog-week :weekly-events="weeklyevents"></btcog-week>
+    <btcog-video :videourl="videoUrl"></btcog-video>
+</div>
+
+<script type="text/javascript" src="../SiteAssets/scripts/date.js"></script>
+<script>
+Vue.component("home-page-slider", {
+    template: '<div class="main"><div id="carouselExampleControls" class="carousel slide" data-ride="carousel">\
+            <ol class="carousel-indicators">\
+            <li data-target="#carouselExampleControls" :data-slide-to="idx" v-for="(item, idx) in images" :class="{active : isActive(idx)}"></li>\
+            </ol>\
+            <div class="carousel-inner">\
+                <div class="carousel-item" :class="{active : isActive(idx)}" v-for="(item, idx) in images">\
+                    <img class="d-block w-100 img-fluid img-responsive" :src="item"  @click="showphoto(item)" />\
+                </div>\
+            </div>\
+            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">\
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>\
+                <span class="sr-only">Previous</span>\
+            </a>\
+            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">\
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>\
+                <span class="sr-only">Next</span>\
+            </a>\
+        </div>\
+        <div id="dialog" class="modal">\
+            <div class="modal-dialog" role="document">\
+                <div class="modal-content">\
+                    <div class="modal-header">\
+                        <h1 class="modal-title">{{albumName}}</h1>\
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>\
+                    </div>\
+                    <div class="modal-body">\
+                        <img src="" class="img-responsive facebookphoto" />\
+                    </div>\
+                </div>\
+            </div>\
+        </div>\
+    </div>',
+    data: function() {
+        return {
+         activeIndex: 0
+        }
+    },
+    props:["images", "albumName"],
+    methods:{
+        showphoto: function(vl)
+        {
+            $("div#dialog img").attr("src",vl);
+            $("#dialog").modal();
+        },
+        isActive: function(vl)
+        {
+            if (vl == this.activeIndex)
+                return true;
+            else
+                return false;        
+        }
+    }
+});
+
+Vue.component("btcog-information", {
+    template: '<div class="service">\
+                <div class="address">\
+                    <h4>Address</h4>\
+                    <ul class="uladdress">\
+                        <li>28 Westwyn Court, Unit#7</li>\
+                        <li>Brampton, Ontario, L6T 4T5</li>\
+                        <li>Tomken & Wilkinson</li>\
+                        <li>Canada</li>\
+                        <li>Email: <a href="mailto:bramptontriumphant@gmail.com">bramptontriumphant@gmail.com</a></li>\
+                        <li>Telephone: 1-844-797-7900</li>\
+                        <li><button style="margin-left:0;" type="button" @click="showdirections">Directions</button></li>\
+                    </ul>\
+                </div>\
+                <div class="times">\
+                    <h4>Service Times</h4>\
+                    <ul class="ulservice">\
+                        <li>Sundays: 10:00AM - 10:50AM - Sunday school (Adult & Children classes)</li>\
+                        <li>Sundays: 11:00AM - 1:30PM - Divine Worship</li>\
+                        <li>First Sunday of the month: Communion Service & Fellowship</li>\
+                        <li>Wednesdays: 7:30PM - 8:30PM - Bible Studies/Prayer Meeting</li>\
+                        <li>Saturdays: 9:00AM - 11:00AM - Prayer & Fasting Service</li>\
+                    </ul>\
+                </div>\
+                <div class="contact">\
+                    <h4>Contact Us</h4>\
+                    <p>Senior Pastor: Rev. Dr. John Walker<br>Email: <a href="mailto:revjwalker@hotmail.com">revjwalker@hotmail.com</a><br>Telephone: (647)708-6641</p>\
+                    <p>Associate Pastor: Rev. Dr. O\'Neil Walker<br>Email: <a href="mailto:evgokwalker@hotmail.com">evgokwalker@hotmail.com</a><br>Telephone: (647)274-3625</p>\
+                    <p>Secretary: Georgia Pryce<br>Email: <a href="mailto:pryce2@sympatico.ca">pryce2@sympatico.ca</a><br>Telephone: (647)283-2435</p>\
+                </div>\
+            </div>',
+    methods:{
+        showdirections: function()
+        {
+            window.location = "Directions.aspx";
+        }
+    }
+});
+
+Vue.component("banner", {
+    template: '<h1 class="display-3 text-uppercase">come and grow with us!<h1>'
+});
+
+Vue.component("btcog-events", {
+    template: '<div class="eventcss">\
+	            <h1 class="display-6">Conventions and Events</h1>\
+                <div class="events" v-for="data in eventsData" @click="showevent(data.URL)"><div>\
+                        <img :src="data.Image" class="img-responsive eventimg" >\
+                        <div class="eventdata">\
+                            <h4>{{ data.Title }}</h4>\
+                            <p style="font-weight:bold;">{{ data.Date }}</p>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>',
+    props:["eventsData"],
+    methods:{
+        showevent(url)
+        {
+            if (url !== "javascript:void")
+                window.open(url);
+        }
+    }
+});
+
+Vue.component("btcog-week", {
+    template:'<div class="thisweek">\
+                <h1 class="display-6">This week @ BTCOG</h1>\
+                <table><thead><tr><th>Event</th><th>Location</th><th>Start Date</th><th>End Date</th></thead></tr>\
+                <tbody><tr v-for="event in weeklyEvents"><td>{{event.Title}}</td><td>{{event.Location}}</td><td>{{event.StartDate}}</td><td>{{event.EndDate}}</td></tr></tbody>\
+                </table>\
+            </div>',
+    props:["weeklyEvents"]
+});
+
+Vue.component("btcog-video", {
+    template: '<div class="videoWrapper">\
+              <iframe   class="videocss embed-responsive-item" width="100%" :src="videourl" frameborder="0" allowfullscreen></iframe></div>',
+    props:["videourl"]
+});
+
+var vm = new Vue({
+    el: "#homePage",
+    data: {
+        imagesAry: [],
+        albumn: '',
+        events: [],
+        weeklyevents: [],
+        videoUrl: ''
+    },
+    beforeCreate: function(){
+        var access, albumid, albumname, cnt = 1;
+        $.ajax({
+            url: "https://graph.facebook.com/v2.8/oauth/access_token?client_id=1557432777878480&client_secret=5f6a0d247f01fc20a2d1dc2bf69b040d&grant_type=client_credentials",
+            method: "GET",
+            headers: { "Accept": "application/json; odata=verbose" },
+            success: function (data) {
+                if (data != null) {
+                    access = data;
+                }               
+            },
+            error: function (data) {
+                alert("Error in retrieving user news channels");
+            }
+        }).done(function() {
+            $.getJSON(
+                "https://graph.facebook.com/v2.8/bramptontriumphant/albums?access_token=" + access.access_token,
+                function (data) {
+                    if (data != null)
+                    {
+                        $.each(data, function (i, item) {
+                            if (cnt == 1)
+                            {
+                                $.each(item, function (x, dta) {
+                                    if (x == 1) {                            
+                                        albumid = dta.id;
+                                        vm.albumn = dta.name;
+                                        return false;
+                                    }
+                                });
+                            }
+                            if (albumid != "")
+                                return false;
+                            cnt++;
+                        });
+
+                        if (albumid != "") {
+                            $.getJSON(
+                                "https://graph.facebook.com/v2.8/" + albumid + "/photos?fields=images&access_token=" + access.access_token,                  
+
+                                function (data) {
+                                    $.each(data.data, function (i, item) {                                
+                                        vm.imagesAry.push(item.images[4].source);                        
+                                    });
+                                }
+                            );
+                        }
+
+                    }
+                }
+            ).done(function() {
+                $.ajax({
+                    url: _spPageContextInfo.webAbsoluteUrl + "/siteassets/Data/events.csv",
+                    type: "GET",
+                    dataType: "text",
+                    success: function (data) {
+                        if (data != null)
+                        {
+                            console.log(data);
+                            var allTextLines = data.split(/\r\n|\n/);
+                            var lines = []; 
+
+                            for (var i=0; i<allTextLines.length; i++) {
+                                var item = allTextLines[i].split(',');
+                                if (item.length == 5) {
+                                    var dt = {
+                                        Image: "../siteassets/Images/" + item[1],
+                                        Title: item[0],
+                                        Date: item[2].replace("\"","") + ", " + item[3].replace("\"",""),
+                                        URL: item[4]
+                                    }
+                                    vm.events.push(dt);
+                                }
+                            }
+                        }
+                    },
+                    error: function(data)
+                    {
+
+                    }
+                }).done(function(){
+                    var start = getWeekStartDate();
+                    var end = getWeekEndDate();
+                    var wrk = {};
+                    $.ajax({
+                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getbytitle('btcog events')/items?$filter=(Start_x0020_Date ge datetime'" + start + "') and (End_x0020_Date le datetime'" + end + "')&$orderby=Start_x0020_Date desc",
+                        type: "GET",
+                        headers: { "Accept": "application/json; odata=verbose" },
+                        success: function (data) {
+                            if (data.d.results.length > 0)
+                            {
+                                $.each(data.d.results, function(x, item){
+                                    wrk = {
+                                        Title: item.Title,
+                                        Location: item.Location,
+                                        StartDate: new Date(item.Start_x0020_Date).toDateString() + " " + new Date(item.Start_x0020_Date).toLocaleTimeString(),
+                                        EndDate: new Date(item.End_x0020_Date).toDateString() + " " + new Date(item.End_x0020_Date).toLocaleTimeString()
+                                    }
+	                	            vm.weeklyevents.push(wrk);
+                                });
+                            }
+                        },
+                        error: function(){
+
+                        }
+                    }).done(function(){
+                        $.get(
+                            "https://www.googleapis.com/youtube/v3/search",
+                            {
+                                part: 'snippet',
+                                channelId: 'UCsxUUddbKUKf27q3Y8iQ5Fw',
+                                maxResults: 1,
+                                order:'date',
+                                publishedAfter: '2015-01-01T00:00:00Z',
+                                q: 'sermon',
+                                key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'
+                            },
+                            function(data) {
+                                vm.videoUrl = "https://www.youtube.com/embed/" + data.items[0].id.videoId;
+                            }
+                        );
+                    });
+                });
+            });
+        });
+
+    },
+    mounted: function(){
+        $('.carousel').carousel({
+            interval: 5000
+        });
+    }
+});
+
+function getWeekStartDate ()
+{
+    
+    var d = new Date();
+    
+    // Sunday
+    if (d.getDay() === 0) 
+        return d.addDays(-1).toString("yyyy-MM-dd")+"T00:00:00";
+        //return d.toString("yyyy-MM-dd")+"T00:00:00";
+    else
+        return d.addDays((d.getDay()-1) * -1).toString("yyyy-MM-dd")+"T00:00:00";	
+}
+
+function getWeekEndDate ()
+{
+    var d = new Date();
+
+    // Sunday
+    if (d.getDay() === 6) 
+        return d.addDays(1).toString("yyyy-MM-dd")+"T00:00:00";
+        //return d.toString("yyyy-MM-dd")+"T00:00:00";
+    else
+    {
+        var t = 6 - d.getDay();
+        return d.addDays(t+1).toString("yyyy-MM-dd")+"T00:00:00";
+    }
+}
+
+</script>
+
+<style>
+/*home page*/
+div#homePage
+{
+    width: 100%;
+    z-index: -1;
+    padding-right: 0;
+    padding-left: 0;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 1140px;
+    margin:auto;
+}
+div.main
+{
+    background: lightgrey;
+    padding-top:10px;
+    padding-bottom: 10px;
+}
+.ms-webpartzone-cell
+{
+    margin-bottom: 0;
+}
+#ms-pageDescriptionDiv
+{
+    display: none;
+}
+/*Carousel*/
+.carousel
+{
+    max-width: 800px;
+    margin: auto;
+}
+/*btcog-information component*/
+div.service, div.Events, div.Event1
+{
+	display:flex;
+	background:#4D2472;
+	color:#fff;
+	padding:10px;
+	justify-content:center;
+	flex-flow:row wrap;
+}
+div.service ul
+{
+    list-style: none;
+}
+div.service ul li
+{
+    padding-bottom: 5px;
+}
+
+div.service > div, div.Events > div, div.Event1 > div
+
+{
+	flex-grow:1;
+	padding:10px;
+	max-width:400px;
+	width:auto;
+}
+div.Events div, div.Event1 div
+{
+	cursor:pointer;
+}
+div.service a, div.service a:visited, div.service a:hover
+{
+	color:#fff;
+	border-bottom:1px dotted;
+	text-decoration:none;
+}
+@media (max-width: 1024px)
+    {
+     div.service {
+        justify-content:flex-start;
+        flex-flow: column;
+     }
+}
+/*Banner*/
+h1.display-3
+{
+    color:#fff;
+    text-align: center;
+    padding-top:50px;
+    padding-bottom: 50px;
+}
+
+/*Events data*/
+div.eventcss h1.display-6
+{
+    text-align:center;
+    color:#fff;
+    width: 100%;
+}
+div.eventcss
+{
+	background:#4D2472;
+    padding: 20px;
+    display:flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+div.events
+{
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    background: #fff;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+img.eventimg
+{
+    max-width: 340px;
+    max-height: 200px;
+    width: 100%;
+}
+div.events > div{
+    padding: 10px;
+}
+div.eventdata
+{
+    background:lightgrey;
+}
+/*This week @ BTCOG*/
+div.thisweek
+{
+    padding:10px;
+    background: #8796a0;
+}
+div.thisweek h1{
+    color:#fff;
+}
+div.thisweek table
+{
+    display: table;
+    width: 100%;
+}
+div.thisweek table tr
+{
+    display: flex;
+    width: 100%;
+}
+div.thisweek tr th, div.thisweek tr td
+{
+    width:25%;
+    padding:10px;
+}
+div.thisweek tr th
+{
+    display: inline-block;
+}
+div.thisweek tr td
+{
+    background: #fff;
+}
+@media (max-width:375px)
+{
+    div.thisweek h1
+    {
+        text-align: center;
+    }    
+}
+@media (max-width: 425px)
+{
+    
+    div.thisweek thead tr{
+        display: none;
+    }
+    div.thisweek tbody tr{
+        display: block;
+        border-bottom: 1px solid;
+    }
+    div.thisweek tbody tr td{
+        display: block;
+    }
+}
+@media (max-width: 568px)
+{
+    #layoutsTable div.thisweek thead tr{
+        display: none;
+    }
+}
+/*Video*/
+.videocss
+{
+    margin-bottom: -5px;
+}
+/*Carousel piture*/
+@media (max-width: 767px)
+{
+    .modal-dialog {
+    width: 100%;
+    }
+}
+@media (min-width: 768px)
+{
+    .modal-dialog {
+        max-width: 880px;
+        width:100%;
+        margin: 30px auto;
+    }
+}
+/*footer for home page*/
+@media (max-width: 768px){
+    div.sitesdata div {
+        max-width: 100%;
+    }
+}
+</style>

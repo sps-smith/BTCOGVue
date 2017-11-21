@@ -1,0 +1,165 @@
+<div id="appContact">
+    <div  class="main" >
+        <h6>Please fill out the form to have your inquiry sent to the appropriate person.</h6>
+        <div id="blockName">
+            <div class="lbl">Name <span class="req">*</span></div>
+            <div class="_name">
+                <div><span >First Name: </span> <input v-model="firstName" type="text" placeholder="First Name" id="fname"/></div>
+                <div><span >Last Name: </span> <input v-model="lastName" type="text" placeholder="First Name" id="lname" /></div>
+            </div>
+        </div>
+        <div id="blockEmail">
+            <div class="lbl">Email or Telephone <span class="req">*</span></div>
+            <div><span >Email: </span> <input v-model="email" type="text" placeholder="Email address" id="email"/></div>
+            <div><span >Telephone: </span> <input v-model="telephone" type="text" placeholder="Telephone number" id="tele" /></div>
+        </div>
+        <div id="blockContact">
+            <div class="lbl">How would you like to be contacted? <span class="req">*</span></div>
+            <div><input type="checkbox" id="chkemail" v-model="chkEmail"/> <span >E-mail: </span> </div>
+            <div><input type="checkbox" id="chktele" v-model="chkTelephone" /> <span >Phone Call: </span> </div>
+        </div>
+        <div id="blockQuestion">
+            <div class="lbl">My question pertains to <span class="req">*</span></div>
+            <div>
+                <select class="selectcss" @change="question($event)" v-model="questionVal">
+                    <option v-for="sel in questionData" :value="sel.value">{{sel.Data}}</option>
+                </select>
+            </div>
+        </div>
+        <div id="blockPartner">
+            <h5>{{ selected }}</h5>
+            <div><textarea id="details" rows="10" cols="100" v-model="comments" placeholder="Please enter some details about your request"></textarea></div>
+        </div>
+        <button type="button" class="btn btn-primary btn-lg btn-block sendrequest" v-if="btnVal">Send Request</button>
+    </div>
+</div>
+
+<script>
+var vueapp = new Vue({
+    el: "#appContact",
+    data: {
+        selected: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        telephone:"",
+        chkEmail:false,
+        chkTelephone:false,
+        questionVal:"",
+        comments:"",
+        questionData:[
+            { value:"", Data: ""},
+            { value:"Baptism" , Data: "Baptism & Family Dedications"},
+            { value:"Give" , Data: "Giving to Brampton Triumphant Church of God(Contributions)"},
+            { value:"Partner" , Data: "Partnering with Brampton Triumphant Church of God"},
+            { value:"Prayer" , Data: "Prayer Request"},
+            { value:"Weddings" , Data: "Weddings at Brampton Triumphant Church of God"},
+            { value:"Hosting" , Data: "Hosting an event at Brampton Triumphant Church of God"},
+            { value:"Service" , Data: "Worship Services at Brampton Triumphant Church of God"},
+            { value:"Question" , Data: "General question"}
+        ]
+    },
+    methods:{
+        question: function(event){
+            var tmp = this.questionData.find(function(item){
+                    return item.value == event.target.value;
+            });
+            this.selected = tmp.Data;
+        }
+    },
+    computed:{
+        btnVal: function(){
+            if (this.selected != "" && this.firstName != "" && this.lastName != "" )
+            {
+                if (this.email != "" || this.telephone != "")
+                {
+                    if (this.chkEmail || this.chkTelephone)
+                        return true;  
+                    else
+                    return false;  
+                }
+                else
+                return false;  
+            }
+            else
+            return false;  
+        }
+
+    }
+});
+</script>
+
+<style>
+#s4-workspace
+{
+    border-top: 1px solid darkgrey;
+}
+div.main
+{
+    max-width: 1140px;
+    margin: auto;
+    background: #fff;
+    padding:10px;
+    margin-top: 10px;
+}
+div._name
+{
+    display: flex;
+    -webkit-flex-flow: row wrap;
+    -ms-flex-flow: row wrap;
+    flex-flow: row wrap;
+}
+div._name div:nth-child(2), div#blockEmail div:nth-child(3), div#blockContact div:nth-child(2)
+{
+    margin-top:10px;
+}
+h6{
+    margin-bottom:20px;
+}
+div#blockName, div#blockEmail, div#blockContact, div#blockQuestion, div#blockPartner
+{
+    display: flex;
+    -webkit-flex-flow: column;
+    -ms-flex-flow: column;
+    flex-flow: column;
+    margin-top:20px;
+}
+#details, div#blockQuestion, div#blockQuestion select
+{
+    width:90%;
+}
+.lbl
+{
+    font-weight: bold;
+}
+.req
+{
+    color:red;
+    font-weight: bold;
+    padding-right: 10px;
+}
+h5{
+    color:#000;
+    margin-top:0;
+    text-align: start;
+    text-decoration: none;
+    width: 100%;
+}
+.sendrequest {
+    margin-top: 20px;
+    height: 40px;
+    cursor: pointer;
+}
+@media (min-width:600px)
+{
+    div._name div:nth-child(2)
+    {
+        margin-top:0;
+        margin-left: 10px;
+    }
+    div#blockQuestion, div#blockQuestion select
+    {
+        width:auto;
+    }
+}
+</style>

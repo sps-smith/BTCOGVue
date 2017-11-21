@@ -1,0 +1,170 @@
+<div class="maphd">
+    <h1 class="display-2">Directions</h1>
+</div>    
+<div id="directions">
+    <btcog-address></btcog-address>  
+    <btcog-directions></btcog-directions>
+</div>
+<div class="gmap">
+    <iframe style="width:100%;height:300px;" src="https://www.google.com/maps/embed/v1/place?q=Brampton Triumphant Church of God&zoom=17&key=AIzaSyC6iOqkFFBV0-KOuI2vpI3D21XOdcH--DA">
+        </iframe>
+</div>
+        
+
+<script>
+Vue.component("btcog-address", {
+    template: '<div class="service">\
+                <div class="address">\
+                    <h4>Address</h4>\
+                    <ul class="uladdress">\
+                        <li>28 Westwyn Court, Unit#7</li>\
+                        <li>Brampton, Ontario, L6T 4T5</li>\
+                        <li>Tomken & Wilkinson</li>\
+                        <li>Canada</li>\
+                        <li>Email: <a href="mailto:bramptontriumphant@gmail.com">bramptontriumphant@gmail.com</a></li>\
+                        <li>Telephone: 1-844-797-7900</li>\
+                    </ul>\
+                </div>\
+                <hr>\
+            </div>'
+});     
+
+Vue.component("btcog-directions", {
+    template:'<div class="directions">\
+                <button type="button" class="btn btn-primary" @click="printdirections">Print Directions</button>\
+                <div class="direction-details">\
+                    <h4>Directions from Toronto and East</h4>\
+                    <ol><li>\
+                        <span class="fnt-2">Take ON 401-W - follow signs for QEW/Hamilton/Ontario 403/Ontario 410/Brampton</span></li><li>\
+                        <span class="fnt-2">Take exit 344 towards Brampton - ON 410-N</span></li><li>\
+                        <span class="fnt-2">Take DERRY ROAD exit.</span></li><li>\
+                        <span class="fnt-2">Take the first left - TOMKEN ROAD</span></li><li>\
+                        <span class="fnt-2">Turn right onto - WILKINSON ROAD</span></li><li>\
+                        <span class="fnt-2">Take the first right - WESTWYN COURT</span></li><li>\
+                        <span class="fnt-2">Follow the road to the end. 28 Westwyn Court has a couple of buildings. Go towards the end of the block to unit7.</span>\
+                        </li></ol>          \
+                    <h4>Directions from Hamilton and West</h4>\
+                    <ol><li>\
+                            <span class="fnt-2">Take ON 403-E - follow signs for Toronto/Ontario 403/Ontario 410/Ford Drive</span></li><li>\
+                            <span class="fnt-2">Take exit towards Brampton - ON 410-N</span></li><li>\
+                            <span class="fnt-2">Take DERRY ROAD exit.</span></li><li>\
+                            <span class="fnt-2">Take the first left - TOMKEN ROAD</span></li><li>\
+                            <span class="fnt-2">Turn right onto - WILKINSON ROAD</span></li><li>\
+                            <span class="fnt-2">Take the first right - WESTWYN COURT</span></li><li>\
+                            <span class="fnt-2">Follow the road to the end. 28 Westwyn Court has a couple of buildings. Go towards the end of the block to unit 7.</span></li></ol>\
+                    <h4>Directions from Orangeville, Caledon and North</h4>\
+                    <ol><li>\
+                            <span class="fnt-2">Take Highway 10-S onto 410-S</span></li><li>\
+                            <span class="fnt-2">Take STEELES AVENUE exit</span></li><li>\
+                            <span class="fnt-2">Turn left unto STEELES AVENUE</span></li><li>\
+                            <span class="fnt-2">Turn right unto TOMKEN ROAD</span></li><li>\
+                            <span class="fnt-2">After the second traffic light, turn left unto WILKINSON ROAD</span></li><li>\
+                            <span class="fnt-2">Take the first right - WESTWYN COURT</span></li><li>\
+                            <span class="fnt-2">Follow the road to the end. 28 Westwyn Court has a couple of buildings. Go towards the end of the block to unit 7.</span></li></ol>\
+                </div>',
+    methods:{
+        printdirections(){
+            var mywindow = window.open('', 'my div', 'height=800,width=800');
+            mywindow.document.write('<html><head><title>my div</title>');
+            mywindow.document.write('</head><body >');
+            mywindow.document.write($("div.direction-details").html());
+            mywindow.document.write('</body></html>');
+
+            mywindow.print();
+            mywindow.close();
+            
+            return true;
+        }
+    }
+
+});  
+
+var vm = new Vue({
+    el: "#directions"
+});
+</script>
+
+<style type="text/css">
+/*Direction Page*/
+div#directions
+{
+    background:#EEEDE7;
+    width: 100%;
+    padding:10px;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 1140px;
+    margin:auto;
+}
+/*Top banner*/
+div.maphd
+{
+	background-image:url('../siteassets/Images/location.jpg');
+	background-repeat:no-repeat;
+	height:220px;
+	text-align:center;
+	border-top:2px solid #8796A0;
+	max-width: 100%;
+	margin: 0 auto;
+	border-bottom:2px solid #8796A0;
+	background-size:cover;
+}
+div.maphd h1
+{
+	margin-top: 45px;
+    color: #4D2472;
+    font-weight: bold;
+    opacity: .8;
+}
+@media (max-width: 500px)
+{
+    div.maphd h1.display-2
+    {
+        margin-top:15px;
+        font-size: 3rem;
+    }
+    div.maphd
+    {
+        height:auto;
+    }
+}
+/*directions*/
+#directions
+{
+	
+	margin: 0 auto;
+	width:100%;
+    padding-right: 0;
+    padding-left: 0;
+}
+div.direction-details ol
+{
+	margin-left:20px;
+}
+div.direction-details ol li, h4
+{
+    padding-right: 20px;
+}
+div.service ul
+{
+    list-style: none;
+}
+#contentBox
+{
+	background:lightgrey;
+}
+div.gmap
+{
+	border-top:2px solid #8796A0;
+    margin-bottom: -4px;
+}
+
+.fnt-2
+{
+    font-size: 11pt;
+}
+#directions button
+{
+    padding: .5rem .75rem;
+}
+</style>

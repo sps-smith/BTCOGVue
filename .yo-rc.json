@@ -1,0 +1,10 @@
+{
+  "generator-sppp": {
+    "app.name": "btcog-vue",
+    "sppp.version": "2.1.9",
+    "app.description": "",
+    "app.author": "",
+    "conf.spFolder": "SiteAssets/Source",
+    "conf.distFolder": "./dist"
+  }
+}

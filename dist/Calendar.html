@@ -1,0 +1,163 @@
+<style type="text/css">
+    #AsynchronousViewDefault_CalendarView
+    {
+        max-width:1140px;
+        margin:auto;
+        border: 5px solid lightgrey;
+        padding: 20px;
+        border-radius: 10px;
+        background: #fff;
+    }
+    table
+    {
+        display:table;
+    }
+    tbody
+    {
+        display: table-row-group;
+    }
+    tr
+    {
+        display:table-row;
+    }
+    td
+    {
+        display:table-cell;
+    }
+    table.ms-acal-month {
+        border: 1px solid lightgrey;
+    }
+    table.ms-acal-month tbody tr:first-child
+    {
+        background:blue;
+    }
+    .ms-acal-month-top
+    {
+        color:#fff;
+    }
+    tr td div.ms-acal-today {
+        color: #000;
+        background: green;
+    }
+    .ms-acal-outday
+    {
+        background:lightblue;
+        opacity:.3;
+    }
+    div.divCalendar
+    {
+        background-image: url(../siteassets/Images/event_background.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        position:fixed;
+        width:100%;
+        z-index:101;
+        opacity:.9;
+        height:220px;
+    }
+    div.divCalendar h1
+    {
+        text-align:center;
+        color:#fff;
+        font-weight:bold;
+        opacity:.6;
+        margin-top:45px;
+    }
+    .ms-acal-display {
+        color: #fff;
+        font-size: 16px;
+        padding: 5px;
+        white-space: nowrap;
+        background: #000;
+    }
+    
+    .monthview{
+        color:#4D2472;
+        font-size:12pt;
+        max-width:1200px;
+        margin:auto;
+        cursor:pointer;
+        font-weight:bold;
+    }
+    .monthview span{
+        border-bottom:1px dotted;
+    }
+    .smallTitle
+    {
+        display:none;
+        color:#fff;
+    }
+    #s4-workspace
+    {
+        border-top: 1px solid darkgrey;
+    }
+    @media (max-width:768px)
+    {
+        h1.display-2
+        {
+            display:none;
+        }
+        .smallTitle
+        {
+            display: inline-block;
+            margin-top: 7px;
+            margin-left: -60px;	
+            }
+        div.divCalendar
+        {
+            height:35px;
+            text-align:center;
+            }
+        .monthview{
+            margin-top: -30px;
+            margin-left: 5px;
+            width: 106px;  
+            display:inline-block;  		
+            }
+        
+    }
+    </style>
+    <!--<div class="divCalendar">
+    <h1 class="display-2">Events Calendar</h1>
+    <h6 class="smallTitle">Events Calendar</h6>-->
+    <div class="monthview"><span>Full Calendar</span></div>
+    <!--</div>-->
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $("#AsynchronousViewDefault_CalendarView").before($("div.monthview"));
+        setInterval(function() {
+            $("div.ms-acal-title a").each(function() {
+                if ($(this).attr("href") != "#")
+                {
+                    var ul = $(this).attr("href") + "&IsDlg=1";
+                    $(this).attr("href","#");
+                    $(this).attr("onclick","openInDialog('" + ul + "')");
+                }
+            });
+        },1000);
+        
+        //$("#contentBox").before($("div.divCalendar"));
+        
+        $("tr.ms-acal-summary-dayrow").click(function(e) {
+            e.preventDefault();
+        });
+        
+        $(".monthview span").click(function() {
+            window.location = window.location.href;
+        });
+    });
+    
+    function openInDialog(pageUrl)
+    {
+        var options = { 
+            url: pageUrl, 
+            width: 600, 
+            height: 600, 
+            allowMaximize: false,
+            showClose: true
+        };
+        
+        SP.SOD.execute("sp.ui.dialog.js", "SP.UI.ModalDialog.showModalDialog", options);
+    }
+    
+    </script>
