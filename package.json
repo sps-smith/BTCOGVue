@@ -1,11 +1,22 @@
 {
   "name": "btcog-vue",
   "version": "1.0.0",
-  "description": "",
+  "description": "Home Page Components\r   - Carousel",
   "main": "./dist/index.js",
   "scripts": {},
   "author": "",
   "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "gulp": "^3.9.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sps-smith/BTCOGVue.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sps-smith/BTCOGVue/issues"
+  },
+  "homepage": "https://github.com/sps-smith/BTCOGVue#readme",
+  "keywords": []
 }

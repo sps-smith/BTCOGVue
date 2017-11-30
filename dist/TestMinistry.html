@@ -1,0 +1,482 @@
+<div id="appMinistry">
+  <btcog-ministries></btcog-ministries>
+  <btcog-ministry></btcog-ministry>
+  <!-- <btcog-send></btcog-send> -->
+</div>
+
+<!-- <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script> -->
+<script src="https://unpkg.com/vuex"></script>
+<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+<script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
+
+<script>
+
+  "use strict";
+
+  var store = new Vuex.Store({
+    state: {
+      ministries: [{
+        ID: 1,
+        Title: "Children's Ministry",
+        Image: "../siteassets/Images/childrens.png",
+        Banner: "../siteassets/Images/children2.jpg",
+        Leader: "Dana Leigh",
+        LeaderPic: "../siteassets/Images/Dana_leigh1.jpg",
+        Content: "BTCOG Children's Ministry is a child-centred ministry dedicated to laying the spiritual foundation that leads into a relationship with God through Jesus Christ.",
+        Component: "/Children/1"
+      }, {
+        ID: 2,
+        Title: "Women's Ministry",
+        Image: "../siteassets/Images/womens_ministry.jpg",
+        Banner: "../siteassets/Images/ladiesministry.jpg",
+        Leader: "Mother Joyce Walker",
+        LeaderPic: "../siteassets/Images/motherwalker1.jpg",
+        Content: "BTCOG Women's Ministry exists to encourage, equip, and strengthen women in their Christian faith. This ministry encourages women to be godly examples in their home, community, and their church.",
+        Component: "/Children/2"
+      }, {
+        ID: 3,
+        Title: "Christian Education",
+        Image: "../siteassets/Images/christian_education.jpg",
+        Banner: "../siteassets/Images/christianeducation2.jpg",
+        Leader: "Pastor O'Neil Walker",
+        LeaderPic: "../siteassets/Images/oneil1.jpg",
+        Content: "BTCOG Christian Education program consists of theologically-based teaching of the bible and the Christian way of life. The teachers aspire to inspire students to believe that God's word is the final authority on the meaning of life and direction for holy living. Adherence to His principles are taught and are encouraged. Students and teachers alike, declare every week, that they are \"God's wondrous treasure; powerful beyond measure\".",
+        Component: "/Children/3"
+      }, {
+        ID: 4,
+        Title: "Men's Ministry",
+        Image: "../siteassets/Images/mens_ministry.jpg",
+        Banner: "../siteassets/Images/btcogmens.jpg",
+        Leader: "Donavon Rhoden",
+        LeaderPic: "../siteassets/Images/placeholder-man.png",
+        Content: "BTCOG Men's Ministry exhorts men to be of spiritual substance, led by the motto: \"Touching others: one life at a time\". This ministry advocates spiritual growth in their moral fabric and encourages the men to embrace the leadership role they were made to uphold.",
+        Component: "/Children/4"
+      }, {
+        ID: 5,
+        Title: "Evangelism",
+        Image: "../siteassets/Images/evangelism.jpg",
+        Banner: "../siteassets/Images/evangelism1.jpg",
+        Leader: "Evg. Maniram Roopnarine",
+        LeaderPic: "../siteassets/Images/maniram.jpg",
+        Content: "Evangelism is the heart of BTCOG to reach the un-churched and unsaved, while maturing believers with the gospel of Jesus Christ. Through the medium of home bible studies, prayer meetings, tract ministry, and quarterly revival service (Love Crusades), BTCOG fulfills the Great Commission, presenting the gospel in a relevant and strategic manner.",
+        Component: "/Children/5"
+      }, {
+        ID: 6,
+        Title: "Media Ministry",
+        Image: "../siteassets/Images/media-ministry-big.jpg",
+        Banner: "../siteassets/Images/mediaministry3.jpg",
+        Leader: "Ministry Leader",
+        LeaderPic: "../siteassets/Images/placeholder-man.png",
+        Content: "BTCOG Media Ministry aims to carry out the gospel of Jesus Christ to our visually-driven, ever-changing world through the use of technology and media. Worship services/events are recorded as a devotional and outreach tool.",
+        Component: "/Children/6"
+      }, {
+        ID: 7,
+        Title: "Youth Ministry",
+        Image: "../siteassets/Images/youth_ministry.jpg",
+        Banner: "../siteassets/Images/youth1.jpg",
+        Leader: "Georgia Pryce",
+        LeaderPic: "../siteassets/Images/georgia.jpg",
+        Content: "BTCOG Youth Ministry invests in young people which enable them to reach their full God-created potential. Youth Ministry works to foster the total personal and spiritual growth of each young person and seeks to draw young people into responsible participation in the life, mission and work within the Christian and urban community.",
+        Component: "/Children/7"
+      }, {
+        ID: 8,
+        Title: "Praise & Worship",
+        Image: "../siteassets/Images/praise.jpg",
+        Banner: "../siteassets/Images/praise_worship1.jpg",
+        Leader: "Evg. Marlene Rhoden",
+        LeaderPic: "../siteassets/Images/marlene1.jpg",
+        Content: "",
+        Component: "/Children/8"
+      }, {
+        ID: 9,
+        Title: "Music Ministry",
+        Image: "../siteassets/Images/music_ministry.jpg",
+        Banner: "../siteassets/Images/music1.jpg",
+        Leader: "Pastor O'Neil Walker",
+        LeaderPic: "../siteassets/Images/oneil21.jpg",
+        Content: "The BTCOG Music Ministry plays an integral part in the worship service(s), producing quality music that glorifies God. Two components uphold this ministry: The Praise Team & House Band. The Praise Team The Praise & Worship team exists to minister to the Lord through praise and worship, to encourage and lead the congregation into the presence of the Lord, and to facilitate and create an atmosphere where the presence of the Lord can dwell.",
+        Component: "/Children/9"
+      }, {
+        ID: 10,
+        Title: "Praise Dance Ministry",
+        Image: "../siteassets/Images/praise_dance.jpg",
+        Banner: "../siteassets/Images/triumphantinmotion.jpg",
+        Leader: "Sophia Jackson",
+        LeaderPic: "../siteassets/Images/sophiajackson1.jpg",
+        Content: "",
+        Component: "/Children/10"
+      }],
+      showEmail: false,
+      currentEmail: "",
+      ministriesSelected: false,
+      currentMinistry:{},
+      nextMinistryID: 0,
+      prevMinistryID:0
+    },
+    getters: {
+      btcogMinistries: function btcogMinistries(state) {
+        return state.ministries;
+      },
+      // getMinistry: function getMinistry(state, getters) {
+      //   return function (id) {
+      //     return state.ministries.find(function (ministry) {
+      //       return ministry.ID === id;
+      //     });
+      //   };
+      // },
+      getNextMinistry: function (state) {
+            return state.nextMinistryID;
+      },
+      getPrevMinistry: function (state) {
+            return state.prevMinistryID;
+      },
+      getEmailView: function getEmailView(state) {
+        return state.showEmail;
+      },
+      getCurrentEmail: function getCurrentEmail(state) {
+        return state.currentEmail;
+      },
+      ministriesSelected: function(state){
+        return state.ministriesSelected;
+      },
+      getCurrentMinistry: function(state){
+          return state.currentMinistry;
+      }
+    },
+    mutations: {
+      setEmailView: function setEmailView(state, payload) {
+        state.showEmail = payload;
+      },
+      setCurrentEmail: function setCurrentEmail(state, payload) {
+        state.currentEmail = payload;
+      },
+      setMinistriesSelected: function(state, payload){
+          state.ministriesSelected = payload;
+      },
+      setCurrentMinistry: function(state, payload){
+          state.currentMinistry = payload;
+      },
+      setNextMinistryID: function(state, payload){
+          state.nextMinistryID = payload;
+      },
+      setPrevMinistryID: function (state, payload) {
+        state.prevMinistryID = payload;
+      }
+    },
+    actions: {
+      actionSetEmailView: function(context, payload) {
+        context.commit("setEmailView", payload.parm);
+        if (payload.parm1 > 0) {
+          var dt = context.state.ministries.filter(function (m) {
+            return m.ID == payload.parm1;
+          });
+          context.commit("setCurrentEmail", dt[0].Leader);
+        }
+      },
+      getMinistryData: function(context, payload) {
+          var data =  context.state.ministries.filter(function (ministry) {
+              return ministry.ID === payload;
+          });
+          if (data != undefined)
+          {
+              context.commit("setCurrentMinistry", data);
+              if (payload > 1 && payload < 10)
+              {
+                  context.commit("setNextMinistryID", payload + 1);
+                  context.commit("setPrevMinistryID", payload - 1);
+              }
+              else
+              {
+                  if (payload == 1)
+                  {
+                      context.commit("setNextMinistryID", payload + 1);
+                      context.commit("setPrevMinistryID", -1);
+                  }
+                  else if (payload == 10)
+                  {
+                    context.commit("setNextMinistryID", -1);
+                    context.commit("setPrevMinistryID", payload - 1);
+                  }
+              }
+          }
+      },
+    }
+  });
+
+  var sndEmail = Vue.component("btcog-send", {
+    template: '<v-app>\
+                <v-dialog v-model="show">\
+                    <v-card-title>Send Email to {{ministryleader}}</v-card-title>\
+                    <v-btn icon @click="close" dark>\
+                        <v-icon>close</v-icon>\
+                    </v-btn>\
+                </v-dialog>\
+            </v-app>',
+    methods: {
+      close: function close() {
+        store.dispatch("actionSetEmailView", { parm: false, parm1: 0 });
+      }
+    },
+    computed: {
+      show: function show() {
+        return store.getters.getEmailView;
+      },
+      ministryleader: function ministryleader() {
+        return store.getters.getCurrentEmail;
+      }
+    }
+  });
+
+  var btcog = Vue.component("btcog-ministries", {
+    template: '<div id="ministries" v-if="!ministries">\
+                    <div class="ministryDetails" @click="getMinistry(item.ID)" v-for="item in churchMinistries" :title="item.Title">\
+                        <div class="ministryImage"><img :src="item.Image" class="img-responsive" :alt="item.Title" />\
+                        </div>\
+                    </div>\
+                </div>',
+    computed: {
+      churchMinistries: function churchMinistries() {
+        return store.getters.btcogMinistries;
+      },
+      ministries: function(){
+          return store.getters.ministriesSelected;
+      }
+    },
+    methods: {
+        getMinistry: function(payload){
+            store.commit('setMinistriesSelected', true);
+            store.dispatch('getMinistryData', payload);
+        }
+    }
+  });
+
+  var children = Vue.component("btcog-ministry", {
+    template: '<div id="ministry" v-if="ministries">\
+                    <div class="banner" :style="{backgroundImage: HeaderImage}">\
+                        <div class="h1div"><h1 class="hTitle">{{ ministry.Title }}</h1></div>\
+                    </div>\
+                    <div class="ministrydiv">\
+                        <div class="leaderImage">\
+                            <img :src="ministry.LeaderPic" class="img-responsive" :alt="ministry.Leader"  />\
+                            <p>{{ministry.Title}} Leader: {{ministry.Leader}}</p>\
+                            <button type="button" class="btn btn-primary" @click="showEmail(id)">Email: {{ministry.Leader}}</button>\
+                        </div>\
+                        <div class="ministryInfo">\
+                            <h4>{{ministry.Title}} @ BTCOG</h4>\
+                            <p>{{ministry.Content}}</p>\
+                        </div>\
+                    </div>\
+                    <div class="bottomNav" :style="{justifyContent: NextMinistry}">\
+                        <span v-if="Prev > -1" class="prev"><i class="fa fa-backward fa-3x" aria-hidden="true"></i> Prev </span><span v-if="Next > -1" class="next"> Next <i class="fa fa-forward fa-3x" aria-hidden="true"></i></span>\
+                    </div>\
+                </div>',
+    props: ["id"],
+    methods: {
+      showEmail: function showEmail(id) {
+        store.dispatch("actionSetEmailView", { parm: true, parm1: this.id });
+      }
+    },
+    computed: {
+      ministry: function () {
+        return store.getters.getCurrentMinistry[0];
+      },
+      HeaderImage: function () {
+        return "url(" + this.ministry.Banner + ")";
+      },
+      Next: function() {
+        return store.getters.getNextMinistry;
+      },
+      Prev: function () {
+        return store.getters.getPrevMinistry;
+      },
+      NextMinistry: function () {
+        if (this.id > 1 && this.id < 10) return "space-between";
+        if (this.id == 1) return "flex-end";
+        if (this.id == 10) return "flex-start";
+      },
+      ministries: function () {
+        return store.getters.ministriesSelected;
+      }
+    }
+  });
+  // var router = new VueRouter({
+  //   routes: [{ path: '/', component: btcog },
+  //           { path: '/Children/:id', component: children, props: true }
+  //         ]
+  // });
+  var app = new Vue({
+    el: "#appMinistry"
+  });
+
+  </script>
+
+  <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
+  <style>
+    /*Page*/
+
+    #s4-workspace {
+      border-top: 1px solid darkgrey;
+    }
+
+    div#ministries {
+      padding: 10px;
+      max-width: 1140px;
+      width: 100%;
+      margin: auto;
+      display: flex;
+      -webkit-flex-flow: row wrap;
+      -ms-flex-flow: row wrap;
+      flex-flow: row wrap;
+      justify-content: space-between;
+      background: #fff;
+    }
+
+    /*minstries*/
+
+    .ministryDetails {
+      max-width: 340px;
+      padding: 10px;
+      cursor: pointer;
+      max-height: 300px;
+    }
+
+    .ministryImage,
+    .ministryImage img {
+      width: 340px;
+      height: 300px;
+    }
+
+    .ministryDetails:hover {
+      background: #C25632;
+      opacity: .6;
+    }
+
+    /*ministry*/
+
+    .banner {
+      width: 100%;
+      height: 300px;
+      background-size: 100%;
+    }
+
+    .banner .h1div {
+      margin: auto;
+      width: 100%;
+      font-size: 2rem;
+      background: #000;
+      opacity: .6;
+      position: fixed;
+      height: 50px;
+    }
+
+    h1.hTitle {
+      max-width: 1140px;
+      width: 100%;
+      margin: auto;
+      color: #fff;
+      font-size: 2rem;
+    }
+
+    div.ministrydiv {
+      display: flex;
+      display: -webkit-flex;
+      max-width: 1120px;
+      width: auto;
+      margin: auto;
+      -ms-flex-flow: row wrap;
+      -webkit-flex-flow: row wrap;
+      flex-flow: row wrap;
+      padding: 10px;
+      background: #fff;
+    }
+
+    div.leaderImage img {
+      padding: 20px;
+    }
+
+    div.leaderImage img {
+      border-radius: 250px;
+      max-width: 250px;
+      width: 100%;
+      max-height: 250px;
+    }
+
+    div.leaderImage {
+      text-align: center;
+      padding: 10px;
+      max-width: 300px;
+      width: 100%;
+    }
+
+    div.ministryInfo {
+      max-width: 600px;
+      width: auto;
+      padding: 20px;
+      border-left: 1px solid lightgrey;
+      flex: 1;
+    }
+
+    div.ministrydiv .btn {
+      padding: .5rem 1rem;
+      cursor: pointer;
+    }
+
+    div.ministryInfo p {
+      padding-right: 10px;
+    }
+
+    .bottomNav {
+      max-width: 1120px;
+      width: auto;
+      margin: auto;
+      position: relative;
+      padding: 10px;
+      display: flex;
+      -webkit-flex-flow: row wrap;
+      -ms-flex-flow: row wrap;
+      flex-flow: row wrap;
+      background: #fff;
+    }
+
+    .prev button,
+    .next button {
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .prev a:link,
+    .prev a:visited,
+    .next a:link,
+    .next a:visited {
+      color: #fff;
+    }
+
+    @media (max-width:636px) {
+      .banner {
+        height: 200px;
+      }
+    }
+
+    @media (max-width:425px) {
+      .banner {
+        height: 150px;
+      }
+    }
+
+    @media (max-width:680px) {
+      div.ministrydiv {
+        -ms-flex-flow: column;
+        -webkit-flex-flow: column;
+        flex-flow: column;
+        justify-content: center;
+      }
+      div.ministryInfo h4,
+      div.ministryInfo p {
+        text-align: center;
+      }
+      div.ministryInfo {
+        padding: 0;
+        border-left: none;
+      }
+    }
+  </style>

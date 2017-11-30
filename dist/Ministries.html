@@ -3,7 +3,7 @@
     <btcog-send></btcog-send>
 </div>
 
-
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
 <script src="https://unpkg.com/vuex"></script>
 <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
 <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
@@ -193,7 +193,7 @@ const children = Vue.component("btcog-ministry",{
                     <div class="bottomNav" :style="{justifyContent: NextMinistry}">\
                         <router-link :to="Prev.Component" v-if="id > 1" class="prev"><button  class="btn btn-primary" :title="Prev.Title"><i class="fa fa-backward fa-3x" aria-hidden="true"></i> Prev </button></router-link><router-link :to="Next.Component" v-if="id < 10" class="next"><button  class="btn btn-primary" :title="Next.Title"> Next <i class="fa fa-forward fa-3x" aria-hidden="true"></i></button></router-link>\
                     </div>\
-                </div>',    
+                </div>',
     props: ["id"],
     methods:{
         showEmail: (id) =>{
@@ -232,7 +232,7 @@ const router = new VueRouter({
 });
 
 var app = new Vue({
-    router    
+    router
 }).$mount("#appMinistry");
 
 
@@ -313,7 +313,7 @@ div.ministrydiv
     background: #fff;
 }
 div.leaderImage img
-{	
+{
 	padding:20px;
 }
 div.leaderImage img
