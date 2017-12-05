@@ -5,7 +5,7 @@
             <div class="lbl">Name <span class="req">*</span></div>
             <div class="_name">
                 <div><span >First Name: </span> <input v-model="firstName" type="text" placeholder="First Name" id="fname"/></div>
-                <div><span >Last Name: </span> <input v-model="lastName" type="text" placeholder="First Name" id="lname" /></div>
+                <div><span >Last Name: </span> <input v-model="lastName" type="text" placeholder="Last Name" id="lname" /></div>
             </div>
         </div>
         <div id="blockEmail">
@@ -30,7 +30,7 @@
             <h5>{{ selected }}</h5>
             <div><textarea id="details" rows="10" cols="100" v-model="comments" placeholder="Please enter some details about your request"></textarea></div>
         </div>
-        <button type="button" class="btn btn-primary btn-lg btn-block sendrequest" v-if="btnVal">Send Request</button>
+        <button type="button" class="btn btn-primary btn-lg btn-block sendrequest" @click.stop="sendInfo" v-if="btnVal">Send Request</button>
     </div>
 </div>
 
@@ -61,28 +61,67 @@ var vueapp = new Vue({
     },
     methods:{
         question: function(event){
-            var tmp = this.questionData.find(function(item){
+            var tmp = this.questionData.filter(function(item){
                     return item.value == event.target.value;
             });
-            this.selected = tmp.Data;
+            this.selected = tmp[0].Data;
+        },
+        sendInfo: function(){
+            var _data = { '__metadata': { 'type': 'SP.Data.WebContactListItem'} };
+            _data["Title"] = this.firstName;
+            _data["LastName"] = this.lastName;
+            _data["Email"] = this.email;
+            _data["Telephone"] = this.telephone;
+            if (this.chkEmail)
+                _data["ContactTelephone"] = "Telephone";
+            if (this.chkTelephone)
+                _data["ContactType"] = "Email";
+            _data["Message"] = this.message;
+            _data["Question"] = this.selected;
+            _data["Details"] = this.comments;
+            var _url = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getbytitle('WebContact')/items";
+            $.ajax({
+                url : _url,
+                method: "POST",
+                contentType: "application/json; odata=verbose",
+                data: JSON.stringify(_data),
+                headers: { "Accept": "application/json; odata=verbose",
+                        "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                        },
+                success: function(data){
+                    alert("Your request has been submitted. Someone will contact you shortly");
+                    vueapp.selected = "";
+                    vueapp.firstName = "";
+                    vueapp.lastName = "";
+                    vueapp.email = "";
+                    vueapp.telephone = "";
+                    vueapp.chkEmail = false,
+                    vueapp.chkTelephone = false,
+                    vueapp.questionVal = "";
+                    vueapp.comments = "";
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            });
         }
     },
     computed:{
         btnVal: function(){
-            if (this.selected != "" && this.firstName != "" && this.lastName != "" )
+            if (this.questionVal != "" && this.firstName != "" && this.lastName != "" )
             {
                 if (this.email != "" || this.telephone != "")
                 {
                     if (this.chkEmail || this.chkTelephone)
                         return true;  
                     else
-                    return false;  
+                        return false;  
                 }
                 else
-                return false;  
+                    return false;  
             }
             else
-            return false;  
+                return false;  
         }
 
     }
@@ -141,7 +180,7 @@ div#blockName, div#blockEmail, div#blockContact, div#blockQuestion, div#blockPar
 h5{
     color:#000;
     margin-top:0;
-    text-align: start;
+    text-align:justify;
     text-decoration: none;
     width: 100%;
 }

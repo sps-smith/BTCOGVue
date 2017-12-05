@@ -35,7 +35,7 @@ Vue.component("about-nav", {
         </b-navbar>',
     props:["selectedAbout"],
     methods:{
-        showabout(event){
+        showabout: function(event){
             var hf = event.srcElement.attributes["href"].value;
             var top = $(hf).position().top;
             var curPos = $("div.main").scrollTop();
@@ -130,7 +130,7 @@ Vue.component("our-pastors", {
                     <div slot="modal-footer"><b-button class="btn btn-alert" @click="closemodal">Close</b-button></div>\
                 </b-modal>\
             </div>',
-    data(){
+    data: function(){
         return{
             content:"",
             pastorTitle: ""
@@ -147,7 +147,7 @@ Vue.component("our-pastors", {
             this.content = event.srcElement.parentElement.innerHTML
             this.$refs.modallg.show();
         },
-        closemodal(){
+        closemodal: function(){
             this.$refs.modallg.hide();
         }
     }
@@ -380,7 +380,7 @@ Vue.component("our-history",{
 
 var vmAbout = new Vue({
     el: "#aboutcontent",
-    data(){
+    data: function(){
         return {
             currentSelected: "pastors",
             johnBio:"<p>If there was a man that was born to serve as a leader in the kingdom of God, Reverend Dr. John Walker was - standing strong,\

@@ -1,7 +1,7 @@
 <style type="text/css">
 #s4-workspace
 {
-	background-image:url('../siteassets/Images/_DSC1890.jpg');
+	background-image:url('../siteassets/Images/btcog_background.jpg');
 	background-size: cover;
 	background-repeat:no-repeat;
 	}
@@ -112,7 +112,7 @@ Vue.component("btcog-information", {
 });
 
 Vue.component("banner", {
-    template: '<h1 class="display-3 text-uppercase">come and grow with us!<h1>'
+    template: '<h1 class="display-3 text-uppercase">come and grow with us!</h1>'
 });
 
 Vue.component("btcog-events", {
@@ -129,7 +129,7 @@ Vue.component("btcog-events", {
             </div>',
     props:["eventsData"],
     methods:{
-        showevent(url)
+        showevent: function(url)
         {
             if (url !== "javascript:void")
                 window.open(url);
@@ -140,7 +140,7 @@ Vue.component("btcog-events", {
 Vue.component("btcog-week", {
     template:'<div class="thisweek">\
                 <h1 class="display-6">This week @ BTCOG</h1>\
-                <table><thead><tr><th>Event</th><th>Location</th><th>Start Date</th><th>End Date</th></thead></tr>\
+                <table><thead><tr><th>Event</th><th>Location</th><th>Start Date</th><th>End Date</th></tr></thead>\
                 <tbody><tr v-for="event in weeklyEvents"><td>{{event.Title}}</td><td>{{event.Location}}</td><td>{{event.StartDate}}</td><td>{{event.EndDate}}</td></tr></tbody>\
                 </table>\
             </div>',
@@ -220,7 +220,6 @@ var vm = new Vue({
                     success: function (data) {
                         if (data != null)
                         {
-                            console.log(data);
                             var allTextLines = data.split(/\r\n|\n/);
                             var lines = []; 
 

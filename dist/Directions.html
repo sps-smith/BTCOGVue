@@ -63,17 +63,19 @@ Vue.component("btcog-directions", {
                             <span class="fnt-2">Follow the road to the end. 28 Westwyn Court has a couple of buildings. Go towards the end of the block to unit 7.</span></li></ol>\
                 </div>',
     methods:{
-        printdirections(){
+        printdirections: function(){
             var mywindow = window.open('', 'my div', 'height=800,width=800');
             mywindow.document.write('<html><head><title>my div</title>');
             mywindow.document.write('</head><body >');
             mywindow.document.write($("div.direction-details").html());
             mywindow.document.write('</body></html>');
 
+            mywindow.document.close();
+            mywindow.focus();
             mywindow.print();
             mywindow.close();
             
-            return true;
+            //return true;
         }
     }
 

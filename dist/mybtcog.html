@@ -1,0 +1,402 @@
+<div id="mybtcogcss">
+    <div id="appLogin">       
+        <not-loggedin></not-loggedin>  
+        <loggedin></loggedin> 
+    </div>                  
+</div>
+
+<script src="https://unpkg.com/vuex"></script>
+<script src="//unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+<script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+
+<script>
+var store = new Vuex.Store({
+    state:{
+        LoggedIn:false,
+        userEmail:""
+    },
+    getters:{
+        getLoggedIn: function(state){
+            return state.LoggedIn;
+        },
+        getUserEmail: function(state){
+            return state.userEmail;
+        }
+    },
+    mutations:{
+        setLoggedIn: function(state, payload){
+            state.LoggedIn = payload;
+        },
+        setUserEmail: function(state, payload){
+            state.userEmail = payload;
+        }
+
+    }
+});
+
+var vueapp = Vue.component("not-loggedin",{
+    template:'<div v-if="!LoggedInUser">\
+                <h6>You are not logged in, please sign in</h6>\
+                <div id="notloggedIn">\
+                    <p class="pforgotcss" v-if="firstload">Forgot your username or password, click <span class="forgotcss" @click="showForgot">here</span> to request your credentials</p>\
+                    <p class="pregistercss" v-if="forgot">Not registered, click <span class="sregisteredcss" @click="showFirst">here</span> to register</p>\
+                    <hr>\
+                    <div class="registercss" title="Member Registration" >\
+                        <h6 v-if="firstload">Not registered? Please complete the form below.</h6>\
+                        <h6 v-if="forgot">Please complete the form below to get your username and passowrd.</h6>\
+                        <div class="cname">\
+                            <div class="dvfname"><span>First Name:<span class="req">*</span> </span><input type="text" id="fName" class="fnamecss" placeholder="First name..." v-model="firstname" /></div>\
+                            <div class="dvlname"><span>Last Name:<span class="req">*</span> </span><input type="text" id="lName" class="lnamecss" placeholder="Last name..." v-model="lastname" /></div>\
+                        </div>\
+                        <div class="cemail">\
+                            <div class="dvemail"><span>Email:<span class="req">*</span> </span><input type="text" id="txtEmail" class="emailcss" placeholder="Enter email address..." v-model="email"/></div>\
+                        </div>\
+                        <button type="button" class="btn btn-primary" @click="sendregistrationemail" v-if="firstload">Send Registration Request</button>\
+                        <button type="button" class="btn btn-primary" @click="sendforgotemail" v-if="forgot">Send Username/Password Request</button>\
+                    </div>\
+                </div>\
+            </div>',
+    data: function(){
+        return{
+            firstname: "",
+            lastname: "",
+            email: "",
+            firstload: true,
+            forgot:false
+        }
+    },    
+    computed:{
+        LoggedInUser: function()
+        {
+            return store.getters.getLoggedIn;
+        }
+    },
+    methods:{
+        showForgot: function(){
+            this.firstload = false;
+            this.forgot = true;
+        },
+        showFirst: function(){
+            this.firstload = true;
+            this.forgot = false;
+        },
+        sendregistrationemail: function(){
+            if (this.firstname == "" || this.lastname == "" || this.email == "")
+                alert("Please complete all the information")
+            else
+            {
+                var _data = { '__metadata': { 'type': 'SP.Data.MemberAccessListItem'} };
+                _data["Title"] = this.firstname;
+                _data["LastName"] = this.lastname;
+                _data["Email"] = this.email;
+                _data["AccessType"] = "Register";
+               
+                this.firstname = "";
+                this.lastname = "";
+                this.email = "";
+
+                var _url = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getbytitle('MemberAccess')/items";
+                $.ajax({
+                    url : _url,
+                    method: "POST",
+                    contentType: "application/json; odata=verbose",
+                    data: JSON.stringify(_data),
+                    headers: { "Accept": "application/json; odata=verbose",
+                            "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                            },
+                    success: function(data){
+                        alert("Your request has been submitted. Your access information will be sent to the email address you entered");
+                        vueapp.firstname = "";
+                        vueapp.lastname = "";
+                        vueapp.email = "";
+                    },
+                    error: function(data){
+                        console.log(data);
+                    }
+                }).done(function(){
+                    this.firstname = "";
+                });
+            }
+        },
+        sendforgotemail: function(){
+            if (this.firstname == "" || this.lastname == "" || this.email == "")
+                alert("Please complete all the information")
+            else
+            {
+                var _data = { '__metadata': { 'type': 'SP.Data.MemberAccessListItem'} };
+                _data["Title"] = this.firstname;
+                _data["LastName"] = this.firstname;
+                _data["Email"] = this.email;
+                _data["AccessType"] = "Password";
+
+                this.firstname = "";
+                this.lastname = "";
+                this.email = "";
+
+                var _url = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getbytitle('MemberAccess')/items";
+                $.ajax({
+                    url : _url,
+                    method: "POST",
+                    contentType: "application/json; odata=verbose",
+                    data: JSON.stringify(_data),
+                    headers: { "Accept": "application/json; odata=verbose",
+                            "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                            },
+                    success: function(data){
+                        alert("Your request has been submitted. Your access information will be sent to the email address you entered");
+                        vueapp.firstname = "";
+                        vueapp.lastname = "";
+                        vueapp.email = "";
+                    },
+                    error: function(data){
+                        console.log(data);
+                    }
+                });
+            }
+        }
+    }    
+
+});
+
+Vue.component("loggedin", {
+    template:'<div v-if="LoggedInUser">\
+                <b-tabs pills card>\
+                    <b-tab title="My Preference" id="preferences">\
+                        <ul class="prefcss">\
+                            <li><input type="checkbox" class="chkTelephone" v-model="chktele"/> Shared my telephone number</li>\
+                            <li><input type="checkbox" class="chkEmail" v-model="chkeml"/> Shared my email</li>\
+                        </ul>\
+                        <button type="button" class="btn btn-primary" @click.stop="updatepreferences">Update Preferences</button>\
+                    </b-tab>\
+                    <b-tab title="My Information" id="information">\
+                        <ul class="infocss">\
+                            <li>Telephone: <input type="text" class="txtTelephone"  placeholder="Telephone.." v-model="telephone" /> </li>\
+                            <li>Email: <input type="text" class="txtEmail" placeholder="Email.." v-model="email"/> </li>\
+                        </ul>\
+                        <button type="button" class="btn btn-primary" @click.stop="updateinformation">Update Information</button>\
+                    </b-tab>\
+                    <b-tab title="My Contribution" id="contribution">\
+                        <h2>Coming soon .....</h2>\
+                    </b-tab>\
+                </b-tabs>\
+            </div>',  
+    data: function(){
+        return{
+            chktele:false,
+            chkeml:false,
+            telephone: "",
+            email: ""
+        }
+    },
+    methods:{
+        updatepreferences: function(){
+            if (this.chkeml || this.chktele)
+            {
+                var _data = { '__metadata': { 'type': 'SP.Data.UpdateMembershipListItem'} };
+                _data["Title"] = store.getters.getUserEmail;
+                _data["ShareEmail"] = this.chkeml;   
+                _data["ShareTelephone"] = this.chktele;
+                var _url = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getbytitle('UpdateMembership')/items";
+                $.ajax({
+                    url : _url,
+                    method: "POST",
+                    contentType: "application/json; odata=verbose",
+                    data: JSON.stringify(_data),
+                    headers: { "Accept": "application/json; odata=verbose",
+                            "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                            },
+                    success: function(data){
+                        alert("Your preferences have been updated");
+                    },
+                    error: function(data){
+                        console.log(data);
+                    }
+                });
+            }
+        },
+        updateinformation: function(){
+            if (this.telephone != "" || this.email != "")
+            {
+                var _data = { '__metadata': { 'type': 'SP.Data.UpdateMembershipListItem'} };
+                _data["Title"] = store.getters.getUserEmail;
+                _data["Email"] = this.email;
+                _data["Telephone"] = this.telephone;
+                var _url = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getbytitle('UpdateMembership')/items";
+                $.ajax({
+                    url : _url,
+                    method: "POST",
+                    contentType: "application/json; odata=verbose",
+                    data: JSON.stringify(_data),
+                    headers: { "Accept": "application/json; odata=verbose",
+                            "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                            },
+                    success: function(data){
+                        alert("Your information has been updated");
+                    },
+                    error: function(data){
+                        console.log(data);
+                    }
+                });
+            }
+        }
+    },
+    computed:{
+        LoggedInUser: function()
+        {
+            return store.getters.getLoggedIn;
+        }
+    },
+});
+
+var app = new Vue({
+    el: "#appLogin",
+    beforeCreate: function(){
+        if (_spPageContextInfo.userId != undefined)
+        {
+            store.commit("setLoggedIn", true);
+            var dt = $("a.ms-core-menu-root").html()
+            var nm = dt.split(".ca")[0];
+            store.commit("setUserEmail", nm + ".ca");
+        }
+    }
+});
+
+
+</script>
+      
+<style>
+#s4-workspace
+{
+    border-top: 1px solid darkgrey;
+}
+div#mybtcogcss
+{
+    padding:10px;
+    max-width: 1140px;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    -webkit-flex-flow: column;
+    -ms-flex-flow: column;
+    flex-flow: column;
+    justify-content: flex-start;
+    background: #fff;
+}
+.bHead
+{
+	background: #4682b4;
+    text-align: center;
+    height: 220px;
+    position: fixed;
+    width: 100%;
+    z-index:101;
+    opacity:.8;
+    }
+.bHead h1
+{
+	color:#fff;
+	font-size:4.5rem;
+	font-weight:bold;
+	opacity:.8;
+	padding-top:64px;
+	padding-bottom:20px;
+
+}
+.mybtcogcss
+{
+	max-width:1200px;
+	margin:auto;
+	padding:10px;
+	background:#fff;
+	border-top:20px solid #ececec;
+}
+div.dvfname input, div.dvlname input
+{
+	max-width:250px;
+	width:100%;
+	}
+div.cemail input
+{
+	max-width:400px;
+	width:100%;
+	}
+
+div.cname
+{
+	height:50px;
+}
+.req
+{
+	color:red;
+	font-weight:bold;
+	font-size:1rem;
+}
+div.cemail
+{
+	margin-top:20px;
+	}
+div.dvfname, div.dvlname, div.dvemail
+{
+	margin-bottom:10px;
+	}
+#mybtcogcss ul
+{
+	list-style:none;
+}
+.infocss li
+{
+	padding-top:10px;
+}
+.infocss li input[type=text]
+{
+	max-width:250px;
+	width:100%;
+	}
+#mybtcogcss input[type=button]
+{
+	cursor:pointer;
+}
+.smallTitle
+{
+	color:#fff;
+	font-size:2rem;
+}
+
+.forgotcss, .sregisteredcss
+{
+	cursor:pointer;
+	border-bottom:1px dotted #4D2472;
+}
+@media (max-width:425px)
+{
+	.bHead
+	{
+		height:35px;
+		margin-top:-40px;
+	}
+
+}
+@media (max-width:768px)
+{
+	.bHead
+	{
+		height:35px;
+	}
+	h1.display-2
+	{
+		display:none;
+	}
+	.smallTitle
+	{
+		display:inline;
+		}
+	.mybtcogcss 
+	{
+		margin-top:40px;
+    }
+}
+
+</style>
