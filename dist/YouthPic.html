@@ -1,0 +1,80 @@
+<div id="YouthPic">
+    <pic-nav></pic-nav>
+    <pic-data></pic-data>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
+<script>
+
+var app = new Vue({
+    el: "#YouthPic",
+    beforeCreate: function(){
+        var access, albumid, albumname, cnt = 1;
+        axios.get("https://graph.facebook.com/v2.8/oauth/access_token?client_id=1557432777878480&client_secret=5f6a0d247f01fc20a2d1dc2bf69b040d&grant_type=client_credentials",{
+            headers: { "Accept": "application/json; odata=verbose" }
+        })
+        .then(function(response){
+            if (response.data != null) 
+                access = response.data;
+        })
+        .then(function(data){
+            axios.get(
+                "https://graph.facebook.com/v2.8/bramptontriumphant/albums?access_token=" + access.access_token,{
+                    headers: { "Accept": "application/json; odata=verbose" }
+            })
+            .then(function(response){
+
+            })
+        })
+        $.ajax({
+            url: "https://graph.facebook.com/v2.8/oauth/access_token?client_id=1557432777878480&client_secret=5f6a0d247f01fc20a2d1dc2bf69b040d&grant_type=client_credentials",
+            method: "GET",
+            headers: { "Accept": "application/json; odata=verbose" },
+            success: function (data) {
+                if (data != null) {
+                    access = data;
+                }               
+            },
+            error: function (data) {
+                alert("Error in retrieving user news channels");
+            }
+        }).done(function() {
+            $.getJSON(
+                "https://graph.facebook.com/v2.8/bramptontriumphant/albums?access_token=" + access.access_token,
+                function (data) {
+                    if (data != null)
+                    {
+                        $.each(data, function (i, item) {
+                            if (cnt == 1)
+                            {
+                                $.each(item, function (x, dta) {
+                                    if (x == 1) {                            
+                                        albumid = dta.id;
+                                        vm.albumn = dta.name;
+                                        return false;
+                                    }
+                                });
+                            }
+                            if (albumid != "")
+                                return false;
+                            cnt++;
+                        });
+
+                        if (albumid != "") {
+                            $.getJSON(
+                                "https://graph.facebook.com/v2.8/" + albumid + "/photos?fields=images&access_token=" + access.access_token,                  
+
+                                function (data) {
+                                    $.each(data.data, function (i, item) {                                
+                                        vm.imagesAry.push(item.images[4].source);                        
+                                    });
+                                }
+                            );
+                        }
+
+                    }
+                }
+            )
+    }
+})
+</script>
