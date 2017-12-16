@@ -1,0 +1,385 @@
+<div id="divtopNav">
+  <top-nav></top-nav>
+  <div id="YouthPic">
+      <pic-nav></pic-nav>
+      <pic-data></pic-data>
+  </div>
+</div>
+
+<script src="https://unpkg.com/vuex"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
+<script>
+
+var store = new Vuex.Store({
+  state:{
+      clientid: '1557432777878480',
+      clientSecret: '5f6a0d247f01fc20a2d1dc2bf69b040',
+      pictureNavigation:[],
+      currentPicType:'',
+      currentSelection:1,
+      _topPictureNav:[
+        {
+            id: 1,
+            type: 'Youth Ministry'
+        },
+        {
+          id: 2,
+          type: 'Mens Ministry'
+        },
+        {
+          id: 3,
+          type: 'Ladies Ministry'
+        },
+        {
+          id: 4,
+          type: 'Other'
+        }
+      ],
+      pictureDataArray:[]
+  },
+  getters:{
+      getPictureNavigation: function(state){
+          return state.pictureNavigation;
+      },
+      getCurrentNavigation: function(state){
+          if (state.currentPicType == "Youth")
+          {
+              return state.pictureNavigation.filter(function(item){
+                  return item.name.toLowerCase().indexOf("youth") > -1;
+              });
+          }
+      },
+      getCurrentSelection: function(state){
+          return state.currentSelection;
+      },
+      getTopPictureNav: function(state){
+          return state._topPictureNav;
+      },
+      getPictureDataArray: function(state){
+          return state.pictureDataArray;
+      }
+  },
+  mutations:{
+      setPictureNavigation: function(state, payload){
+          state.pictureNavigation = payload;
+      },
+      setCurrentNavigation: function(state, payload){
+          state.currentPicType = payload;
+      },
+      setCurrentSelection: function(state, payload){
+          state.currentSelection = payload;
+      },
+      setPictureDataArray: function(state, payload){
+          state.pictureDataArray = payload;
+      }
+  },
+  actions:{
+      setNavigationAction: function(context, payload){
+          var data = context.getters.getPictureNavigation;
+          if (data.length == 0)
+              context.commit("setPictureNavigation", payload);
+          else
+          {
+              Array.prototype.push.apply(data, payload);
+              context.commit("setPictureNavigation", data);
+          }
+      },
+      getPictures: function(context, payload){
+          var _id = context.getters.getCurrentNavigation[0].id;
+          var access;
+          axios.get("https://graph.facebook.com/v2.11/oauth/access_token?client_id=1557432777878480&client_secret=5f6a0d247f01fc20a2d1dc2bf69b040d&grant_type=client_credentials", {
+            headers: { "Accept": "application/json; odata=verbose" }
+          })
+          .then(function (response) {
+            if (response.data != null)
+              access = response.data;
+          })
+          .then(function(data){
+              axios.get("https://graph.facebook.com/v2.11/" + _id + "/photos?fields=picture&access_token=" + access.access_token, {
+                headers: { "Accept": "application/json; odata=verbose" }
+              })
+              .then(function (response) {
+                context.commit("setPictureDataArray", response.data.data);
+              })
+          })
+      }
+  }
+})
+
+var topNav = Vue.component('top-nav',{
+    template:'<div id="topNav">\
+                <h1> Picture Library</h1>\
+                <div id="picDiv">\
+                  <div @click="getPicture(nav.id)" v-for="nav in topNav" :class="{ selected: currentlySelected(nav.id) }">{{nav.type}}</div>\
+                </div>\
+              </div>',
+    methods:{
+        getPicture: function(payload){
+            if (store.getters.getCurrentSelection != payload)
+              store.commit('setCurrentSelection', payload)
+            $('#s4-workspace').scrollTop(0);
+        },
+        currentlySelected: function (payload) {
+          if (store.getters.getCurrentSelection === payload)
+            return true
+          return false;
+        },
+    },
+    computed:{
+        topNav: function(){
+            return store.getters.getTopPictureNav;
+        }
+    }
+})
+
+var nav = Vue.component('pic-nav',{
+    template:'<div id="navDiv">\
+                  <ul><li class="linav" v-for="(item, idx) in navItems" :title="item.name" v-show="idx < showcount" @click="getpictures(item.id)">{{item.name}}</li></ul>\
+                  <span class="cssmore" v-if="showmore" @click="displayMore">{{showValue}}</span>\
+              </div>',
+    data: function(){
+      return{
+          showmore:true,
+          showcount: 15,
+          showValue: 'more...'
+      }
+    },
+    computed:{
+        navItems: function(){
+            return store.getters.getCurrentNavigation;
+        }
+    },
+    methods:{
+      displayMore: function(){
+          if (this.showcount > 15)
+          {
+                this.showValue = "more...";
+                this.showcount = 15;
+          }
+          else
+          {
+                this.showValue = "less...";
+                this.showcount = this.navItems.length;
+          }
+          $('#s4-workspace').scrollTop(0);
+      },
+      getpictures: function(payload){
+
+      }
+    }
+})
+
+var nav = Vue.component('pic-data', {
+  template: '<div id="picData">\
+                <div class="pic" v-for="pic in pictureData">\
+                  <img :src="pic.picture" class="img-responsive" />\
+                </div>\
+            </div>',
+  computed:{
+      pictureData: function(){
+          return store.getters.getPictureDataArray;
+      }
+  }
+})
+
+var app = new Vue({
+    el: "#divtopNav",
+    data:{
+        parm:''
+    },
+    beforeCreate: function(){
+        var access, albumid, albumname, cnt = 1;
+        axios.get("https://graph.facebook.com/v2.11/oauth/access_token?client_id=1557432777878480&client_secret=5f6a0d247f01fc20a2d1dc2bf69b040d&grant_type=client_credentials",{
+            headers: { "Accept": "application/json; odata=verbose" }
+        })
+        .then(function(response){
+            if (response.data != null)
+                access = response.data;
+        })
+        .then(function(data){
+            var _token ="https://graph.facebook.com/v2.11/bramptontriumphant/albums?fields=name,id&access_token=" + access.access_token;
+            getPictureNav(_token);
+        })
+        // .then(function(data){
+        //     app.parm = getParameterByName("picture");
+        // })
+        // $.ajax({
+        //     url: "https://graph.facebook.com/v2.8/oauth/access_token?client_id=1557432777878480&client_secret=5f6a0d247f01fc20a2d1dc2bf69b040d&grant_type=client_credentials",
+        //     method: "GET",
+        //     headers: { "Accept": "application/json; odata=verbose" },
+        //     success: function (data) {
+        //         if (data != null) {
+        //             access = data;
+        //         }
+        //     },
+        //     error: function (data) {
+        //         alert("Error in retrieving user news channels");
+        //     }
+        // }).done(function() {
+            // $.getJSON(
+            //     "https://graph.facebook.com/v2.8/bramptontriumphant/albums?access_token=" + access.access_token,
+            //     function (data) {
+            //         if (data != null)
+            //         {
+            //             $.each(data, function (i, item) {
+            //                 if (cnt == 1)
+            //                 {
+            //                     $.each(item, function (x, dta) {
+            //                         if (x == 1) {
+            //                             albumid = dta.id;
+            //                             vm.albumn = dta.name;
+            //                             return false;
+            //                         }
+            //                     });
+            //                 }
+            //                 if (albumid != "")
+            //                     return false;
+            //                 cnt++;
+            //             });
+
+            //             if (albumid != "") {
+            //                 $.getJSON(
+            //                     "https://graph.facebook.com/v2.8/" + albumid + "/photos?fields=images&access_token=" + access.access_token,
+
+            //                     function (data) {
+            //                         $.each(data.data, function (i, item) {
+            //                             vm.imagesAry.push(item.images[4].source);
+            //                         });
+            //                     }
+            //                 );
+            //             }
+
+            //         }
+            //     }
+            // )
+    }
+})
+
+function getPictureNav(access_token){
+    axios.get(
+      access_token, {
+      headers: { "Accept": "application/json; odata=verbose" }
+    })
+    .then(function(response) {
+        store.dispatch("setNavigationAction", response.data.data);
+        if (response.data.paging.next != undefined)
+            getPictureNav(response.data.paging.next)
+        else
+        {
+            var parm = getParameterByName("pic");
+            if (parm.toLowerCase().indexOf("youth") > -1)
+                store.commit('setCurrentNavigation', "Youth");
+            store.dispatch('getPictures', "");
+        }
+    })
+}
+
+function getParameterByName(name) {
+  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexString = "[\\?&]" + name + "=([^&#]*)";
+  var regex = new RegExp(regexString);
+  var found = regex.exec(window.location.search);
+  if (found == null)
+    return "";
+  else
+    return decodeURIComponent(found[1].replace(/\+/g, " "));
+}
+
+</script>
+
+<style>
+div#topNav{
+  width: 100%;
+  position: fixed;
+  background: #ECECEC ;
+}
+div#topNav h1{
+  text-align: center;
+  color: #4D2472;
+}
+div#picDiv{
+  display: flex;
+  -ms-flex-flow: row wrap;
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+  padding-top:10px;
+  padding-bottom:10px;
+}
+div#picDiv div{
+  flex:.25;
+  text-align: center;
+  border-right: 1px solid grey;
+  background: #4D2472;
+  color:#fff;
+  padding:10px;
+  cursor:pointer;
+}
+div#picDiv div:hover{
+  background: #ECECEC ;
+  color: #000;
+  border: 1px solid #000;
+}
+div#YouthPic
+{
+    display: flex;
+    -ms-flex-flow: row wrap;
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+    padding-top:130px;
+}
+#navDiv
+{
+    max-width: 300px;
+}
+.linav
+{
+  padding-bottom: 5px;
+  padding-top: 5px;
+  cursor: pointer;
+}
+.linav:hover
+{
+  background: #4D2472;
+  color:#fff;
+}
+.cssmore
+{
+    cursor: pointer;
+    color:  #4D2472;
+}
+.cssmore:hover
+{
+    border-bottom: 1px dotted #4d2472;
+}
+div#picDiv div.selected
+{
+    background: #fff;
+    color:#4d2472;
+    border: 1px solid #4d2472;
+}
+div#picData{
+  display: flex;
+  -ms-flex-flow: row wrap;
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+  flex:1;
+  justify-content: flex-start;
+}
+div#picData div
+{
+    max-width: 120px;
+    padding:10px;
+}
+div.pic img
+{
+    width: 100px;
+    height:100px;
+}
+@media (max-width:425px)
+{
+    div#YouthPic
+    {
+      padding-top: 140px;
+    }
+}
+</style>

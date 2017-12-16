@@ -1,15 +1,23 @@
 <div id="appMinistry">
-    <router-view></router-view>
-    <btcog-send></btcog-send>
+    <btcog-ministries></btcog-ministries>
+    <btcog-ministry></btcog-ministry>  
 </div>
 
 <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
 <script src="https://unpkg.com/vuex"></script>
-<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
-<script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
+<script src="//unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+<script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
 
 <script>
-const store = new Vuex.Store({
+Vue.directive('focus',{
+    bind: function(){
+        this.el.focus();
+    }
+});
+
+var store = new Vuex.Store({
     state:{
         ministries:[
             { ID : 1,
@@ -19,6 +27,7 @@ const store = new Vuex.Store({
               Leader: "Dana Leigh",
               LeaderPic: "../siteassets/Images/Dana_leigh1.jpg",
               Content: "BTCOG Children's Ministry is a child-centred ministry dedicated to laying the spiritual foundation that leads into a relationship with God through Jesus Christ.",
+              Email: "psmith@btcog.ca",
               Component: "/Children/1"  },
             { ID : 2,
               Title: "Women's Ministry",
@@ -27,6 +36,7 @@ const store = new Vuex.Store({
               Leader: "Mother Joyce Walker",
               LeaderPic: "../siteassets/Images/motherwalker1.jpg",
               Content: "BTCOG Women's Ministry exists to encourage, equip, and strengthen women in their Christian faith. This ministry encourages women to be godly examples in their home, community, and their church.",
+              Email: "psmith@btcog.ca",
               Component: "/Children/2"  },
             { ID : 3,
               Title: "Christian Education",
@@ -35,14 +45,16 @@ const store = new Vuex.Store({
               Leader: "Pastor O'Neil Walker",
               LeaderPic: "../siteassets/Images/oneil1.jpg",
               Content: "BTCOG Christian Education program consists of theologically-based teaching of the bible and the Christian way of life. The teachers aspire to inspire students to believe that God's word is the final authority on the meaning of life and direction for holy living. Adherence to His principles are taught and are encouraged. Students and teachers alike, declare every week, that they are \"God's wondrous treasure; powerful beyond measure\".",
+              Email: "psmith@btcog.ca",
               Component: "/Children/3"  },
             { ID : 4,
               Title: "Men's Ministry",
               Image: "../siteassets/Images/mens_ministry.jpg" ,
               Banner: "../siteassets/Images/btcogmens.jpg",
               Leader: "Donavon Rhoden",
-              LeaderPic: "../siteassets/Images/placeholder-man.png",
+              LeaderPic: "../siteassets/Images/placeholder-man.jpg",
               Content: "BTCOG Men's Ministry exhorts men to be of spiritual substance, led by the motto: \"Touching others: one life at a time\". This ministry advocates spiritual growth in their moral fabric and encourages the men to embrace the leadership role they were made to uphold.",
+              Email: "psmith@btcog.ca",
               Component: "/Children/4"  },
             { ID : 5,
               Title: "Evangelism",
@@ -51,22 +63,25 @@ const store = new Vuex.Store({
               Leader: "Evg. Maniram Roopnarine",
               LeaderPic: "../siteassets/Images/maniram.jpg",
               Content: "Evangelism is the heart of BTCOG to reach the un-churched and unsaved, while maturing believers with the gospel of Jesus Christ. Through the medium of home bible studies, prayer meetings, tract ministry, and quarterly revival service (Love Crusades), BTCOG fulfills the Great Commission, presenting the gospel in a relevant and strategic manner.",
+              Email: "psmith@btcog.ca",
               Component: "/Children/5"  },
             { ID : 6,
               Title: "Media Ministry",
               Image: "../siteassets/Images/media-ministry-big.jpg",
               Banner: "../siteassets/Images/mediaministry3.jpg",
               Leader: "Ministry Leader",
-              LeaderPic: "../siteassets/Images/placeholder-man.png",
+              LeaderPic: "../siteassets/Images/placeholder-man.jpg",
               Content: "BTCOG Media Ministry aims to carry out the gospel of Jesus Christ to our visually-driven, ever-changing world through the use of technology and media. Worship services/events are recorded as a devotional and outreach tool.",
+              Email: "psmith@btcog.ca",
               Component: "/Children/6"  },
             { ID : 7,
               Title: "Youth Ministry",
               Image: "../siteassets/Images/youth_ministry.jpg",
               Banner: "../siteassets/Images/youth1.jpg",
               Leader: "Georgia Pryce",
-              LeaderPic: "../siteassets/Images/georgia.jpg",
+              LeaderPic: "../siteassets/Images/georgia1.jpg",
               Content: "BTCOG Youth Ministry invests in young people which enable them to reach their full God-created potential. Youth Ministry works to foster the total personal and spiritual growth of each young person and seeks to draw young people into responsible participation in the life, mission and work within the Christian and urban community.",
+              Email: "psmith@btcog.ca",
               Component: "/Children/7"  },
             { ID : 8,
               Title: "Praise & Worship",
@@ -75,6 +90,7 @@ const store = new Vuex.Store({
               Leader: "Evg. Marlene Rhoden",
               LeaderPic: "../siteassets/Images/marlene1.jpg",
               Content: "",
+              Email: "psmith@btcog.ca",
               Component: "/Children/8"  },
             { ID : 9,
               Title: "Music Ministry",
@@ -83,6 +99,7 @@ const store = new Vuex.Store({
               Leader: "Pastor O'Neil Walker",
               LeaderPic: "../siteassets/Images/oneil21.jpg",
               Content: "The BTCOG Music Ministry plays an integral part in the worship service(s), producing quality music that glorifies God. Two components uphold this ministry: The Praise Team & House Band. The Praise Team The Praise & Worship team exists to minister to the Lord through praise and worship, to encourage and lead the congregation into the presence of the Lord, and to facilitate and create an atmosphere where the presence of the Lord can dwell.",
+              Email: "psmith@btcog.ca",
               Component: "/Children/9"  },
             { ID : 10,
               Title: "Praise Dance Ministry",
@@ -91,91 +108,142 @@ const store = new Vuex.Store({
               Leader: "Sophia Jackson",
               LeaderPic: "../siteassets/Images/sophiajackson1.jpg",
               Content: "",
+              Email: "psmith@btcog.ca",
               Component: "/Children/10"  }
         ],
-        showEmail: false,
-        currentEmail:""
+        ministriesSelected: false,
+        currentMinistry:{},
+        currentMinistryID:0,
+        nextMinistryID: 0,
+        prevMinistryID:0,
+        nextMinistryTitle:"",
+        prevMinistryTitle:""
+  
     },
     getters:{
-        btcogMinistries: state => {
+        btcogMinistries: function(state) {
             return state.ministries;
         },
-        getMinistry: (state, getters) => (id) => {
-            return state.ministries.find( ministry => ministry.ID === id)
+        getNextMinistry: function (state) {
+            return state.nextMinistryID;
         },
-        nextMinistry: (state, getters) => (id) => {
-            return state.ministries.find( ministry => ministry.ID === id+1)
+        getPrevMinistry: function (state) {
+                return state.prevMinistryID;
         },
-        prevMinistry: (state, getters) => (id) => {
-            return state.ministries.find( ministry => ministry.ID === id-1)
+        ministriesSelected: function(state){
+            return state.ministriesSelected;
         },
-        getEmailView: (state) => {
-            return state.showEmail;
+        getCurrentMinistry: function(state){
+            return state.currentMinistry;
         },
-        getCurrentEmail: (state) => {
-            return state.currentEmail;
+        getCurrentMInistryID: function(state){
+            return state.currentMinistryID;
+        },
+        getNextMinistryTitle: function(state){
+            return state.nextMinistryTitle;
+        },
+        getPrevMinistryTitle: function(state){
+            return state.prevMinistryTitle;
         }
     },
     mutations:{
-        setEmailView: (state, payload) =>{
-            state.showEmail = payload;
+        setMinistriesSelected: function(state, payload){
+            state.ministriesSelected = payload;
         },
-        setCurrentEmail: (state, payload) =>{
-            state.currentEmail = payload;
+        setCurrentMinistry: function(state, payload){
+            state.currentMinistry = payload;
+        },
+        setNextMinistryID: function(state, payload){
+            state.nextMinistryID = payload;
+        },
+        setPrevMinistryID: function (state, payload) {
+            state.prevMinistryID = payload;
+        },
+        setCurrentMinistryID: function(state, payload){
+            state.currentMinistryID = payload;
+        },
+        setNextMinistryTitle: function(state, payload){
+            state.nextMinistryTitle = payload;
+        },
+        setPrevMinistryTitle: function(state, payload){
+            state.prevMinistryTitle = payload;
         }
     },
     actions:{
-        actionSetEmailView: (context, payload) => {
-            context.commit("setEmailView", payload.parm);
-            if (payload.parm1 > 0)
+        getMinistryData: function(context, payload){
+            context.commit("setCurrentMinistryID", payload);
+            var data =  context.state.ministries.filter(function (ministry) {
+                return ministry.ID === payload;
+            });
+            if (data != undefined)
             {
-                var dt = context.state.ministries.filter(m => m.ID == payload.parm1);
-                context.commit("setCurrentEmail", dt[0].Leader);
-            }
+                context.commit("setCurrentMinistry", data);
+                if (payload > 1 && payload < 10)
+                {
+                    context.commit("setNextMinistryID", payload + 1);
+                    context.commit("setPrevMinistryID", payload - 1);
+                }
+                else
+                {
+                    if (payload == 1)
+                    {
+                        context.commit("setNextMinistryID", payload + 1);
+                        context.commit("setPrevMinistryID", -1);
+                    }
+                    else if (payload == 10)
+                    {
+                      context.commit("setNextMinistryID", -1);
+                      context.commit("setPrevMinistryID", payload - 1);
+                    }
+                }
+
+                if (context.state.nextMinistryID > 0)
+                {
+                    var data =  context.state.ministries.filter(function (ministry) {
+                        return ministry.ID === context.state.nextMinistryID;
+                    });
+                    if (data != undefined)
+                        context.commit("setNextMinistryTitle", data[0].Title)
+                }
+
+                if (context.state.prevMinistryID > 0)
+                {
+                    var data =  context.state.ministries.filter(function (ministry) {
+                        return ministry.ID === context.state.prevMinistryID ;
+                    });
+                    if (data != undefined)
+                        context.commit("setPrevMinistryTitle", data[0].Title)
+                }
+            }  
         }
     }
 });
 
-const sndEmail = Vue.component("btcog-send",{
-    template:'<v-app>\
-                <v-dialog v-model="show">\
-                    <v-card-title>Send Email to {{ministryleader}}</v-card-title>\
-                    <v-btn icon @click="close" dark>\
-                        <v-icon>close</v-icon>\
-                    </v-btn>\
-                </v-dialog>\
-            </v-app>',
-    methods:{
-        close: () =>{
-            store.dispatch("actionSetEmailView", {parm: false, parm1: 0});
-        }
-    },
-    computed:{
-        show: () =>{
-            return store.getters.getEmailView;
-        },
-        ministryleader: () =>{
-            return store.getters.getCurrentEmail;
-        }
-    }
-});
-
-const btcog = Vue.component("btcog-ministries",{
-    template: '<div id="ministries">\
-                    <div class="ministryDetails" v-for="item in churchMinistries" :title="item.Title">\
-                        <div class="ministryImage"><router-link :to="item.Component"><img :src="item.Image" class="img-responsive" :alt="item.Title" />\
-                        </router-link></div>\
+var btcog = Vue.component("btcog-ministries",{
+    template: '<div id="ministries" v-if="!ministries">\
+                    <div class="ministryDetails" @click="getMinistry(item.ID)" v-for="item in churchMinistries" :title="item.Title">\
+                        <div class="ministryImage"><img :src="item.Image" class="img-responsive" :alt="item.Title" />\
+                        </div>\
                     </div>\
                 </div>',
-    computed:{
-        churchMinistries(){
+    computed: {
+        churchMinistries: function churchMinistries() {
             return store.getters.btcogMinistries;
+        },
+        ministries: function(){
+            return store.getters.ministriesSelected;
         }
-    }
+    }, 
+    methods: {
+        getMinistry: function(payload){
+            store.commit('setMinistriesSelected', true);
+            store.dispatch('getMinistryData', payload);
+        }
+    }            
 });
 
-const children = Vue.component("btcog-ministry",{
-    template: '<div id="ministry">\
+var children = Vue.component("btcog-ministry",{
+    template: '<div id="ministry" v-if="ministries">\
                     <div class="banner" :style="{backgroundImage: HeaderImage}">\
                         <div class="h1div"><h1 class="hTitle">{{ ministry.Title }}</h1></div>\
                     </div>\
@@ -183,64 +251,198 @@ const children = Vue.component("btcog-ministry",{
                         <div class="leaderImage">\
                             <img :src="ministry.LeaderPic" class="img-responsive" :alt="ministry.Leader"  />\
                             <p>{{ministry.Title}} Leader: {{ministry.Leader}}</p>\
-                            <button type="button" class="btn btn-primary" @click="showEmail(id)">Email: {{ministry.Leader}}</button>\
+                            <button type="button" class="btn btn-primary" @click="showEmail()">Email: {{ministry.Leader}}</button>\
                         </div>\
                         <div class="ministryInfo">\
                             <h4>{{ministry.Title}} @ BTCOG</h4>\
                             <p>{{ministry.Content}}</p>\
                         </div>\
                     </div>\
-                    <div class="bottomNav" :style="{justifyContent: NextMinistry}">\
-                        <router-link :to="Prev.Component" v-if="id > 1" class="prev"><button  class="btn btn-primary" :title="Prev.Title"><i class="fa fa-backward fa-3x" aria-hidden="true"></i> Prev </button></router-link><router-link :to="Next.Component" v-if="id < 10" class="next"><button  class="btn btn-primary" :title="Next.Title"> Next <i class="fa fa-forward fa-3x" aria-hidden="true"></i></button></router-link>\
+                    <div class="bottomNav" :class="{ _flexend: End, _flexstart: Start, _flexbetween: Space }">\
+                        <span v-if="Prev > -1" class="prev" :title="PrevTitle"  @click="gotoMinistry(Prev)"><i class="fa fa-backward fa-3x" aria-hidden="true"></i><span class="nav"> Prev </span></span><span v-if="Next > -1" :title="NextTitle"  class="next" @click="gotoMinistry(Next)"><span class="nav"> Next </span><i class="fa fa-forward fa-3x" aria-hidden="true"></i></span>\
                     </div>\
+<<<<<<< HEAD
                 </div>',
     props: ["id"],
+=======
+                    <b-modal ref="modallg" size="lg" :title="emailTitle(ministry.Title)" no-close-on-backdrop >\
+                        <div class="modaldiv">\
+                            <div><span>TO:</span> <span>{{ministry.Leader}}</span></div>\
+                            <div><span>FROM:</span> <input type="text" ref="email" v-model="fromEmail" placeholder="Your email address" /></div>\
+                            <div><span>MESSAGE:</span><br />\
+                            <textarea cols="80" rows="10" v-model="message" /></div>\
+                        </div>\
+                        <div slot="modal-footer"><b-button variant="outline-success" class="btn" @click="sendEmail(ministry.Leader, ministry.Title)">Send</b-button></div>\
+                    </b-modal>\
+                </div>',
+    data: function(){
+        return{
+            fromEmail: "",
+            message:""
+        }
+    },
+>>>>>>> 41134242a026483b440f2262f8f6089bc336f430
     methods:{
-        showEmail: (id) =>{
-            store.dispatch("actionSetEmailView", {parm: true, parm1: id});
+        showEmail: function(){
+            this.fromEmail = "";
+            this.message = "";
+            this.$refs.email.focus();
+            this.$refs.modallg.show();
+        },
+        gotoMinistry: function(payload){
+            store.dispatch('getMinistryData', payload);
+        },
+        emailTitle: function(payload){
+            return "Email " + payload + " Leader";
+        },
+        sendEmail: function(payload, payload1){
+            var mdl = this.$refs.modallg;
+            if (this.fromEmail == "")
+            {
+                alert("You must enter a email address");
+                return false;
+            }
+            if (this.message == "")
+            {
+                alert("You have not entered any message");
+                return false;
+            }
+            var _data = { '__metadata': { 'type': 'SP.Data.EmailReceivedListItem'} };
+            _data["Title"] = payload;
+            _data["FromEmail"] = this.fromEmail;
+            _data["Message"] = this.message;
+            _data["Leader"] = payload1;    
+            var _url = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getbytitle('EmailReceived')/items";
+            $.ajax({
+                url : _url,
+                method: "POST",
+                contentType: "application/json; odata=verbose",
+                data: JSON.stringify(_data),
+                headers: { "Accept": "application/json; odata=verbose",
+                        "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                        },
+                success: function(data){
+                    alert("Email sent");
+                    mdl.hide();
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            });
         }
     },
     computed:{
-        ministry(){
-            return store.getters.getMinistry(parseInt(this.id));
-        },
-        HeaderImage(){
+        ministry: function () {
+            return store.getters.getCurrentMinistry[0];
+          },
+        HeaderImage: function () {
             return "url(" + this.ministry.Banner + ")";
         },
-        Next(){
-            return store.getters.nextMinistry(parseInt(this.id))
+        Next: function() {
+            return store.getters.getNextMinistry;
         },
-        Prev(){
-            return store.getters.prevMinistry(parseInt(this.id))
+        Prev: function () {
+            return store.getters.getPrevMinistry;
         },
-        NextMinistry(){
-            if (this.id > 1 && this.id < 10)
-                return "space-between";
-            if (this.id == 1)
-                return "flex-end";
-            if (this.id == 10)
-                return "flex-start";
+        Space: function () {
+            if (this.ministry.ID > 1 && this.ministry.ID < 10) 
+                return true;
+            else
+                return false;
+        },
+        End: function () {
+            if (this.ministry.ID == 1)
+                return true;
+            else
+                return false;
+        },
+        Start: function () {
+            if (this.ministry.ID == 10)
+                return true;
+            else
+                return false;
+        },
+        ministries: function () {
+            return store.getters.ministriesSelected;
+        },
+        PrevTitle: function(){
+            return store.getters.getPrevMinistryTitle;
+        },
+        NextTitle: function(){
+            return store.getters.getNextMinistryTitle;
+        }
+    },
+    watch:{
+        ministry: function(){
+            $('#s4-workspace').scrollTop(0);
         }
     }
 });
 
-const router = new VueRouter({
-    routes:[
-        { path: '/', component: btcog},
-        { path: '/Children/:id', component: children, props: true}
-    ]
-});
-
 var app = new Vue({
+<<<<<<< HEAD
     router
 }).$mount("#appMinistry");
+=======
+    el: "#appMinistry"
+});
+>>>>>>> 41134242a026483b440f2262f8f6089bc336f430
 
+function sendMessage(leader, title, fromEmail, message)
+{
+    var _data = { '__metadata': { 'type': 'SP.Data.EmailReceivedListItem'} };
+    _data["Title"] = title;
+    _data["FromEmail"] = fromEmail;
+    _data["Message"] = message;
+    _data["Leader"] = leader;    
+    var _url = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getbytitle('EmailReceived')/items";
+    $.ajax({
+        url : _url,
+        method: "POST",
+        contentType: "application/json; odata=verbose",
+        data: JSON.stringify(_data),
+        headers: { "Accept": "application/json; odata=verbose",
+                   "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                },
+        success: function(data){
+            alert("Email sent");
+        },
+        error: function(data){
+            console.log(data);
+        }
+    });
+}
 
 </script>
 
-<link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
+<!-- <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet"> -->
 <style>
 /*Page*/
+table,  tbody, tr, thead{
+    display:block;
+}
+td
+{
+    display:inline-block;
+
+}
+#contentBox
+{
+    margin-left:0;
+    margin-right: 0;
+}
+._flexend
+{
+    justify-content: flex-end;
+}
+._flexstart
+{
+    justify-content:flex-start;
+}
+._flexbetween
+{
+    justify-content: space-between;
+}
 #s4-workspace
 {
     border-top: 1px solid darkgrey;
@@ -279,7 +481,7 @@ div#ministries
 {
     width:100%;
     height: 300px;
-    background-size: 100%;
+    background-size: cover;
 }
 .banner .h1div
 {
@@ -360,6 +562,20 @@ div.ministryInfo p
     flex-flow:row wrap;
     background: #fff;
 }
+.bottomNav span
+{
+    display: flex;
+    cursor: pointer;
+    color:darkgrey;
+}
+.bottomNav span:hover
+{
+    color:#8796A0;
+}
+.nav
+{
+    padding:10px;
+}
 .prev button, .next button
 {
     cursor: pointer;
@@ -368,6 +584,19 @@ div.ministryInfo p
 .prev a:link, .prev a:visited, .next a:link, .next a:visited
 {
     color:#fff;
+}
+.modal-header
+{
+    padding:0;
+    height: 40px;
+}
+.modal-header h5
+{
+    margin-top: 0;
+    color: #000;
+    text-decoration: none;
+    cursor: default;
+    width:auto;
 }
 @media (max-width:636px)
 {
