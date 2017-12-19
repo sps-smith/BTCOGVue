@@ -145,14 +145,17 @@ var topNav = Vue.component('top-nav',{
 
 var nav = Vue.component('pic-nav',{
     template:'<div id="navDiv">\
+                <div class="smallcss" v-if="smallScreen"><i class="fa fa-angle-double-down fa-2x" aria-hidden="true" @click="showItems" v-if="showcount === -1"></i><i class="fa fa-angle-double-up fa-2x" aria-hidden="true" @click="hideItems" v-if="showcount > -1"></i>\
+                </div>\
                   <ul><li class="linav" v-for="(item, idx) in navItems" :title="item.name" v-show="idx < showcount" @click="getpictures(item.id)">{{item.name}}</li></ul>\
-                  <span class="cssmore" v-if="showmore" @click="displayMore">{{showValue}}</span>\
+                  <span class="cssmore" v-if="showmore && !smallScreen" @click="displayMore">{{showValue}}</span>\
               </div>',
     data: function(){
       return{
           showmore:true,
           showcount: 15,
-          showValue: 'more...'
+          showValue: 'more...',
+          smallScreen: false
       }
     },
     computed:{
@@ -178,10 +181,22 @@ var nav = Vue.component('pic-nav',{
 
       },
       handleWindowResize: function(event){
-            if (event.currentTarget.innerWidth < 425)
+            if (event.currentTarget.innerWidth <= 425)
             {
-                this.showcount = this.navItems.length;
+                this.showcount = -1;
+                this.smallScreen = true;
             }
+            else
+            {
+                this.showcount = 15;
+                this.smallScreen = false;
+            }
+      },
+      showItems: function(){
+        this.showcount = this.navItems.length;
+      },
+      hideItems: function(){
+        this.showcount = -1;
       }
     },
     mounted: function(){
@@ -456,6 +471,13 @@ div.pic img
 {
     max-width: 100%;
 }
+.fa-angle-double-down, .fa-angle-double-up{
+    cursor: pointer;
+}
+.smallcss
+{
+    text-align: right;
+}
 @media (max-width:425px)
 {
     div#navDiv
@@ -467,6 +489,10 @@ div.pic img
         -ms-flex-flow: column;
         -webkit-flex-flow: column;
         flex-flow: column;
+    }
+    div#navDiv ul{
+        position: absolute;
+        background: lightgrey;
     }
 }
 </style>
