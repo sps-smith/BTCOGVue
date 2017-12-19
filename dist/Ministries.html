@@ -261,10 +261,6 @@ var children = Vue.component("btcog-ministry",{
                     <div class="bottomNav" :class="{ _flexend: End, _flexstart: Start, _flexbetween: Space }">\
                         <span v-if="Prev > -1" class="prev" :title="PrevTitle"  @click="gotoMinistry(Prev)"><i class="fa fa-backward fa-3x" aria-hidden="true"></i><span class="nav"> Prev </span></span><span v-if="Next > -1" :title="NextTitle"  class="next" @click="gotoMinistry(Next)"><span class="nav"> Next </span><i class="fa fa-forward fa-3x" aria-hidden="true"></i></span>\
                     </div>\
-<<<<<<< HEAD
-                </div>',
-    props: ["id"],
-=======
                     <b-modal ref="modallg" size="lg" :title="emailTitle(ministry.Title)" no-close-on-backdrop >\
                         <div class="modaldiv">\
                             <div><span>TO:</span> <span>{{ministry.Leader}}</span></div>\
@@ -281,7 +277,6 @@ var children = Vue.component("btcog-ministry",{
             message:""
         }
     },
->>>>>>> 41134242a026483b440f2262f8f6089bc336f430
     methods:{
         showEmail: function(){
             this.fromEmail = "";
@@ -380,13 +375,8 @@ var children = Vue.component("btcog-ministry",{
 });
 
 var app = new Vue({
-<<<<<<< HEAD
-    router
-}).$mount("#appMinistry");
-=======
     el: "#appMinistry"
 });
->>>>>>> 41134242a026483b440f2262f8f6089bc336f430
 
 function sendMessage(leader, title, fromEmail, message)
 {

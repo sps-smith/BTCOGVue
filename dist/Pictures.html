@@ -8,6 +8,9 @@
 
 <script src="https://unpkg.com/vuex"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
+<script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+<script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
 <script>
 
 var store = new Vuex.Store({
@@ -35,7 +38,8 @@ var store = new Vuex.Store({
           type: 'Other'
         }
       ],
-      pictureDataArray:[]
+      pictureDataArray:[],
+      _albumTitle:""
   },
   getters:{
       getPictureNavigation: function(state){
@@ -57,6 +61,9 @@ var store = new Vuex.Store({
       },
       getPictureDataArray: function(state){
           return state.pictureDataArray;
+      },
+      getAlbumTitle: function(state){
+          return state._albumTitle;
       }
   },
   mutations:{
@@ -71,6 +78,9 @@ var store = new Vuex.Store({
       },
       setPictureDataArray: function(state, payload){
           state.pictureDataArray = payload;
+      },
+      setAlbunmTitle: function(state, payload){
+          state._albumTitle = payload;
       }
   },
   actions:{
@@ -86,6 +96,7 @@ var store = new Vuex.Store({
       },
       getPictures: function(context, payload){
           var _id = context.getters.getCurrentNavigation[0].id;
+          context.commit("setAlbunmTitle", context.getters.getCurrentNavigation[0].name);
           var access;
           axios.get("https://graph.facebook.com/v2.11/oauth/access_token?client_id=1557432777878480&client_secret=5f6a0d247f01fc20a2d1dc2bf69b040d&grant_type=client_credentials", {
             headers: { "Accept": "application/json; odata=verbose" }
@@ -95,7 +106,7 @@ var store = new Vuex.Store({
               access = response.data;
           })
           .then(function(data){
-              axios.get("https://graph.facebook.com/v2.11/" + _id + "/photos?fields=picture&access_token=" + access.access_token, {
+              axios.get("https://graph.facebook.com/v2.11/" + _id + "/photos?fields=picture,images&access_token=" + access.access_token, {
                 headers: { "Accept": "application/json; odata=verbose" }
               })
               .then(function (response) {
@@ -165,19 +176,51 @@ var nav = Vue.component('pic-nav',{
       },
       getpictures: function(payload){
 
+      },
+      handleWindowResize: function(event){
+            if (event.currentTarget.innerWidth < 425)
+            {
+                this.showcount = this.navItems.length;
+            }
       }
+    },
+    mounted: function(){
+        window.addEventListener('resize', this.handleWindowResize);
     }
 })
 
 var nav = Vue.component('pic-data', {
-  template: '<div id="picData">\
-                <div class="pic" v-for="pic in pictureData">\
-                  <img :src="pic.picture" class="img-responsive" />\
+  template: '<div id="picMain">\
+                <h3>{{albumTitle}}</h3>\
+                <div id="picData">\
+                    <div class="pic" v-for="pic in pictureData">\
+                        <img :src="pic.picture" class="img-responsive" @click="showpicture(pic.images[2])" />\
+                    </div>\
                 </div>\
+                <b-modal ref="modallg" size="lg" :title="albumTitle" no-close-on-backdrop >\
+                    <div class="modaldiv">\
+                        <img :src="imgData" />\
+                    </div>\
+                    <div slot="modal-footer"></div>\
+                </b-modal>\
             </div>',
+    data: function(){
+        return{
+            imgData:""
+        }
+    },
   computed:{
       pictureData: function(){
           return store.getters.getPictureDataArray;
+      },
+      albumTitle: function(){
+          return store.getters.getAlbumTitle;
+      }
+  },
+  methods:{
+      showpicture: function(payload){
+            this.imgData = payload.source;
+            this.$refs.modallg.show();
       }
   }
 })
@@ -287,6 +330,9 @@ function getParameterByName(name) {
 
 </script>
 
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap@next/dist/css/bootstrap.min.css"/>
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
+
 <style>
 div#topNav{
   width: 100%;
@@ -330,12 +376,14 @@ div#YouthPic
 #navDiv
 {
     max-width: 300px;
+    border-right: 1px solid lightgrey;
 }
 .linav
 {
   padding-bottom: 5px;
   padding-top: 5px;
   cursor: pointer;
+  border-bottom: 1px dotted lightgrey;
 }
 .linav:hover
 {
@@ -364,22 +412,61 @@ div#picData{
   flex-flow: row wrap;
   flex:1;
   justify-content: flex-start;
+  align-content: flex-start;
+}
+div#picMain{
+    flex:1;
+}
+div#picMain h3{
+    text-align: justify;
+    color: #4d2472;
+    margin-left: 10px;
 }
 div#picData div
 {
     max-width: 120px;
     padding:10px;
+    cursor: pointer;
 }
 div.pic img
 {
     width: 100px;
     height:100px;
 }
+.modal-header
+{
+    padding:0;
+    height: 40px;
+    margin:0;
+}
+.modal-header h5
+{
+    margin-top: 0;
+    color: #000;
+    text-decoration: none;
+    cursor: default;
+    width:auto;
+    margin-left:10px;
+}
+.modaldiv
+{
+    text-align: center;
+}
+.modaldiv img
+{
+    max-width: 100%;
+}
 @media (max-width:425px)
 {
+    div#navDiv
+    {
+        margin-top:50px;
+    }
     div#YouthPic
     {
-      padding-top: 140px;
+        -ms-flex-flow: column;
+        -webkit-flex-flow: column;
+        flex-flow: column;
     }
 }
 </style>
