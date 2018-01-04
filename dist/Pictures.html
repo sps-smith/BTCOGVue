@@ -62,14 +62,13 @@ var store = new Vuex.Store({
           if (state.currentPicType == "Women")
           {
               return state.pictureNavigation.filter(function(item){
-                  return item.name.toLowerCase().indexOf("women") > -1 || item.name.toLowerCase().indexOf("lad") > -1;
+                  return item.name.toLowerCase().indexOf("women") > -1 || item.name.toLowerCase().indexOf("lad") > -1 || item.name.toLowerCase().indexOf("mother") > -1;
               });
           }
           if (state.currentPicType == "Other")
           {
               return state.pictureNavigation.filter(function(item){
-                  return item.name.toLowerCase().indexOf("men") == -1 && item.name.toLowerCase().indexOf("lad") == -1 &&
-                  item.name.toLowerCase().indexOf("youth") == -1 && item.name.toLowerCase().indexOf("revival") == -1;
+                  return item.name.toLowerCase().indexOf("pastor john walker") > -1 || item.name.toLowerCase().indexOf("general convention") > -1 || item.name.toLowerCase().indexOf("rally") > -1;
               });
           }
 
@@ -199,7 +198,7 @@ var nav = Vue.component('pic-nav',{
                     <transition-group name="fade" tag="ul">\
                         <li class="linav" :class="{ selected: currentSelection(idx) }" v-for="(item, idx) in navItems" :title="item.name" v-show="idx < showcount" @click="getpictures(item.id, item.name, idx)" :key="item.id">{{item.name}}</li>\
                     </transition-group>\
-                  <b-button size="sm" class="cssmore btnToggle" v-if="showmore && !smallScreen" @click="displayMore">{{showValue}}</b-button>\
+                  <b-button size="sm" class="cssmore btnToggle" v-if="showmore && !smallScreen && navItems.length > 14" @click="displayMore">{{showValue}}</b-button>\
               </div>',
     data: function(){
       return{
@@ -282,7 +281,7 @@ var nav = Vue.component('pic-data', {
                 </div>\
                 <b-modal ref="modallg" size="lg" :title="albumTitle" no-close-on-backdrop >\
                     <div slot="modal-header">\
-                        <h3>{{albumTitle}}</h3>\
+                        <h3 class="diaTitle">{{albumTitle}}</h3>\
                         <b-btn size="sm" class="btnClose" variant="primary" @click="hidepicture">\
                             Close\
                         </b-btn>\
@@ -517,6 +516,7 @@ div#picData{
   flex:1;
   justify-content: flex-start;
   align-content: flex-start;
+  margin-top:35px;
 }
 div#picMain{
     flex:1;
@@ -525,6 +525,9 @@ div#picMain h3{
     text-align: left;
     color: #4d2472;
     margin-left: 10px;
+    position: fixed;
+    width: 100%;
+    background: #ECECEC;
 }
 div#picData div
 {
@@ -554,7 +557,7 @@ div.pic img
     width: 100%;
 }
 
-.modal-header h5
+div#picMain h3.diaTitle
 {
     margin-top: 0;
     color: #000;
@@ -562,6 +565,7 @@ div.pic img
     cursor: default;
     width:auto;
     margin-left:10px;
+    position: relative;
 }
 .modaldiv
 {

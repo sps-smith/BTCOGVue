@@ -1,0 +1,628 @@
+<div id="divtopNav">
+    <top-nav></top-nav>
+    <div id="YouthPic">
+        <pic-nav></pic-nav>
+        <pic-data></pic-data>
+    </div>
+  </div>
+  
+  <script src="https://unpkg.com/vuex"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
+  <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+  <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+  
+  <script>
+  
+  var store = new Vuex.Store({
+    state:{
+        clientid: '1557432777878480',
+        clientSecret: '5f6a0d247f01fc20a2d1dc2bf69b040',
+        pictureNavigation:[],
+        currentPicType:'',
+        currentSelection:1,
+        _topPictureNav:[
+          {
+              id: 1,
+              type: 'Youth Ministry'
+          },
+          {
+            id: 2,
+            type: 'Mens Ministry'
+          },
+          {
+            id: 3,
+            type: 'Ladies Ministry'
+          },
+          {
+            id: 4,
+            type: 'Sermons'
+          }
+        ],
+        pictureDataArray:[],
+        _albumTitle:""
+    },
+    getters:{
+        getPictureNavigation: function(state){
+            return state.pictureNavigation;
+        },
+        getCurrentNavigation: function(state){
+            if (state.currentPicType == "Youth")
+            {
+                return state.pictureNavigation.filter(function(item){
+                    return item.name.toLowerCase().indexOf("youth") > -1;
+                });
+            }
+            if (state.currentPicType == "Men")
+            {
+                return state.pictureNavigation.filter(function(item){
+                    return item.name.toLowerCase().indexOf("men") > -1 && item.name.toLowerCase().indexOf("women") == -1 || 
+                    item.name.toLowerCase().indexOf("revival") > -1;
+                });
+            }
+            if (state.currentPicType == "Women")
+            {
+                return state.pictureNavigation.filter(function(item){
+                    return item.name.toLowerCase().indexOf("women") > -1 || item.name.toLowerCase().indexOf("lad") > -1 || item.name.toLowerCase().indexOf("mother") > -1;
+                });
+            }
+            if (state.currentPicType == "Other")
+            {
+                return state.pictureNavigation.filter(function(item){
+                    return item.name.toLowerCase().indexOf("pastor john walker") > -1 || item.name.toLowerCase().indexOf("general convention") > -1 || item.name.toLowerCase().indexOf("rally") > -1;
+                });
+            }
+  
+        },
+        getCurrentSelection: function(state){
+            return state.currentSelection;
+        },
+        getTopPictureNav: function(state){
+            return state._topPictureNav;
+        },
+        getPictureDataArray: function(state){
+            return state.pictureDataArray;
+        },
+        getAlbumTitle: function(state){
+            return state._albumTitle;
+        }
+    },
+    mutations:{
+        setPictureNavigation: function(state, payload){
+            state.pictureNavigation = payload;
+        },
+        setCurrentNavigation: function(state, payload){
+            state.currentPicType = payload;
+        },
+        setCurrentSelection: function(state, payload){
+            state.currentSelection = payload;
+        },
+        setPictureDataArray: function(state, payload){
+            state.pictureDataArray = payload;
+        },
+        setAlbunmTitle: function(state, payload){
+            state._albumTitle = payload;
+        }
+    },
+    actions:{
+        setNavigationAction: function(context, payload){
+            var data = context.getters.getPictureNavigation;
+            if (data.length == 0)
+                context.commit("setPictureNavigation", payload);
+            else
+            {
+                Array.prototype.push.apply(data, payload);
+                context.commit("setPictureNavigation", data);
+            }
+        },
+        getPictures: function(context, payload){
+            var _id;
+            if (payload == "")
+            {
+                  _id = context.getters.getCurrentNavigation[0].id;
+                  context.commit("setAlbunmTitle", context.getters.getCurrentNavigation[0].name);
+            }
+            else{
+                  _id = payload.parm1;
+                  context.commit("setAlbunmTitle", payload.parm2);
+            }
+            var access;
+            axios.get("https://graph.facebook.com/v2.11/oauth/access_token?client_id=1557432777878480&client_secret=5f6a0d247f01fc20a2d1dc2bf69b040d&grant_type=client_credentials", {
+              headers: { "Accept": "application/json; odata=verbose" }
+            })
+            .then(function (response) {
+              if (response.data != null)
+                access = response.data;
+            })
+            .then(function(data){
+                axios.get("https://graph.facebook.com/v2.11/" + _id + "/photos?fields=picture,images&access_token=" + access.access_token, {
+                  headers: { "Accept": "application/json; odata=verbose" }
+                })
+                .then(function (response) {
+                  context.commit("setPictureDataArray", response.data.data);
+                })
+            })
+        },
+        getSelectedPictureLibrary: function(context){
+            switch(context.state.currentSelection){
+                  case 1:
+                      context.commit('setCurrentNavigation', "Youth");
+                      break;
+                  case 2:
+                      context.commit('setCurrentNavigation', "Men");
+                      break;
+                  case 3:
+                      context.commit('setCurrentNavigation', "Women");
+                      break;
+                  case 4:
+                      context.commit('setCurrentNavigation', "Other");
+                      break;
+            }
+            context.dispatch("getPictures","");
+        }
+    }
+  })
+  
+  var topNav = Vue.component('top-nav',{
+      template:'<div id="topNav">\
+                  <h1> Video Library</h1>\
+                  <div id="picDiv">\
+                    <div @click="getPicture(nav.id)" v-for="nav in topNav" :class="{ selected: currentlySelected(nav.id) }">{{nav.type}}</div>\
+                  </div>\
+                </div>',
+      methods:{
+          getPicture: function(payload){
+              if (store.getters.getCurrentSelection != payload)
+              {
+                  store.commit('setCurrentSelection', payload)
+                  store.dispatch("getSelectedPictureLibrary")
+                  $('#s4-workspace').scrollTop(0);
+              }
+          },
+          currentlySelected: function (payload) {
+            if (store.getters.getCurrentSelection === payload)
+              return true
+            return false;
+          },
+      },
+      computed:{
+          topNav: function(){
+              return store.getters.getTopPictureNav;
+          }
+      }
+  })
+  
+  var nav = Vue.component('pic-nav',{
+      template:'<div id="navDiv">\
+                  <div class="smallcss" v-if="smallScreen"><i class="fa fa-angle-double-down fa-2x" aria-hidden="true" title="show picture menu" @click="showItems" v-if="showcount === -1"></i><i class="fa fa-angle-double-up fa-2x" title="hide picture menu" aria-hidden="true" @click="hideItems" v-if="showcount > -1"></i>\
+                  </div>\
+                      <transition-group name="fade" tag="ul">\
+                          <li class="linav" :class="{ selected: currentSelection(idx) }" v-for="(item, idx) in navItems" :title="item.name" v-show="idx < showcount" @click="getpictures(item.id, item.name, idx)" :key="item.id">{{item.name}}</li>\
+                      </transition-group>\
+                    <b-button size="sm" class="cssmore btnToggle" v-if="showmore && !smallScreen && navItems.length > 14" @click="displayMore">{{showValue}}</b-button>\
+                </div>',
+      data: function(){
+        return{
+            showmore:true,
+            showcount: 14,
+            showValue: 'more...',
+            smallScreen: false,
+            selectedX: 0
+        }
+      },
+      computed:{
+          navItems: function(){
+              return store.getters.getCurrentNavigation;
+          }
+      },
+      methods:{
+        displayMore: function(){
+            if (this.showcount > 14)
+            {
+                  this.showValue = "more...";
+                  this.showcount = 14;
+            }
+            else
+            {
+                  this.showValue = "less...";
+                  this.showcount = this.navItems.length;
+            }
+            $('#s4-workspace').scrollTop(0);
+        },
+        getpictures: function(payload, payload1, payload2){
+              store.dispatch('getPictures', { parm1: payload, parm2 : payload1});
+              if (this.smallScreen)
+                  this.showcount = -1;
+              this.selectedX = payload2;
+              $('#s4-workspace').scrollTop(0);
+        },
+        handleWindowResize: function(event){
+              if (event.currentTarget.innerWidth <= 425)
+              {
+                  this.showcount = -1;
+                  this.smallScreen = true;
+              }
+              else
+              {
+                  this.showcount = 14;
+                  this.smallScreen = false;
+              }
+        },
+        showItems: function(){
+          this.showcount = this.navItems.length;
+        },
+        hideItems: function(){
+          this.showcount = -1;
+        },
+        currentSelection: function(payload){
+              if (this.selectedX == payload)
+                  return true;
+              return false;
+        }
+      },
+      mounted: function(){
+          window.addEventListener('resize', this.handleWindowResize);
+      },
+      watch: {
+          navItems: function(){
+              this.selectedX = 0;
+              this.showcount = 14,
+              this.showValue = 'more...';
+          }
+      }
+  })
+  
+  var nav = Vue.component('pic-data', {
+    template: '<div id="picMain">\
+                  <h3>{{albumTitle}}</h3>\
+                  <div id="picData">\
+                      <div class="pic" v-for="pic in pictureData">\
+                          <img :src="pic.picture" class="img-responsive" @click="showpicture(pic.images[2], pic.id)" />\
+                      </div>\
+                  </div>\
+                  <b-modal ref="modallg" size="lg" :title="albumTitle" no-close-on-backdrop >\
+                      <div slot="modal-header">\
+                          <h3 class="diaTitle">{{albumTitle}}</h3>\
+                          <b-btn size="sm" class="btnClose" variant="primary" @click="hidepicture">\
+                              Close\
+                          </b-btn>\
+                      </div>\
+                      <div class="modaldiv">\
+                          <img :src="imgData" />\
+                      </div>\
+                      <div slot="modal-footer">\
+                          <div class="bottomNav">\
+                              <span class="prev" title="previous" @click="gotopic(1)"><i class="fa fa-backward fa-2x" aria-hidden="true"></i></span>\
+                              <span class="next" title="next"  @click="gotopic(2)"><i class="fa fa-forward fa-2x" aria-hidden="true"></i></span>\
+                          </div>\
+                      </div>\
+                  </b-modal>\
+              </div>',
+      data: function(){
+          return{
+              imgData:"",
+              currentID: 0
+          }
+      },
+    computed:{
+        pictureData: function(){
+            return store.getters.getPictureDataArray;
+        },
+        albumTitle: function(){
+            return store.getters.getAlbumTitle;
+        }
+    },
+    methods:{
+        showpicture: function(payload, payload1){
+              this.imgData = payload.source;
+              this.currentID = payload1;
+              this.$refs.modallg.show();
+        },
+        hidepicture: function(){
+              this.$refs.modallg.hide();
+        },
+        gotopic: function(payload){
+              var wrkdata = this.pictureData;
+              var _cid = this.currentID;
+              var dt ={};
+              $.each(wrkdata, function(x, item){
+                  if (item.id == _cid)
+                  {                    
+                      if (payload == 1)
+                      {
+                          if (x == 0)
+                              dt = wrkdata[wrkdata.length-1];
+                          else
+                              dt = wrkdata[x-1];
+                      }
+  
+                      if (payload == 2)
+                      {
+                          if (x == wrkdata.length-1)
+                              dt = wrkdata[0];
+                          else
+                              dt = wrkdata[x+1];
+  
+                      }
+                      return false;
+                  }
+              });
+              this.imgData = dt.images[2].source;
+              this.currentID = dt.id;
+        }
+    }
+  })
+  
+  var app = new Vue({
+      el: "#divtopNav",
+      data:{
+          parm:''
+      },
+      beforeCreate: function(){
+          var access, albumid, albumname, cnt = 1;
+          axios.get("https://www.googleapis.com/youtube/v3/search",{
+               params:{ channelId: 'UCsxUUddbKUKf27q3Y8iQ5Fw',
+                part: 'snippet',
+                maxResults: 50,
+                order:'date',
+                type: 'video',
+                q: 'men',
+                key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'     
+               }           
+            }
+          )
+          .then(function(response){
+              if (response.data != null)
+                  access = response.data;
+          })
+          .then(function(data){
+              //var _token ="https://graph.facebook.com/v2.11/bramptontriumphant/albums?fields=name,id&access_token=" + access.access_token;
+              //getPictureNav(_token);
+          })
+      }
+  })
+  
+  function getPictureNav(access_token){
+      axios.get(
+        access_token, {
+        headers: { "Accept": "application/json; odata=verbose" }
+      })
+      .then(function(response) {
+          store.dispatch("setNavigationAction", response.data.data);
+          if (response.data.paging.next != undefined)
+              getPictureNav(response.data.paging.next)
+          else
+          {
+              store.commit('setCurrentNavigation', "Youth");
+              store.dispatch('getPictures', "");
+          }
+      })
+  }
+  
+  function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    var regexString = "[\\?&]" + name + "=([^&#]*)";
+    var regex = new RegExp(regexString);
+    var found = regex.exec(window.location.search);
+    if (found == null)
+      return "";
+    else
+      return decodeURIComponent(found[1].replace(/\+/g, " "));
+  }
+  
+  </script>
+  
+  <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap@next/dist/css/bootstrap.min.css"/>
+  <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
+  
+  <style>
+  div#divtopNav
+  {
+      padding-left: 10px;
+  }
+  div#topNav{
+    width: 100%;
+    position: fixed;
+    background: #ECECEC ;
+  }
+  div#topNav h1{
+    text-align: center;
+    color: #4D2472;
+  }
+  div#picDiv{
+    display: flex;
+    -ms-flex-flow: row wrap;
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+    padding-top:10px;
+    padding-bottom:10px;
+  }
+  div#picDiv div{
+    flex:.25;
+    text-align: center;
+    border-right: 1px solid grey;
+    background: #4D2472;
+    color:#fff;
+    padding:10px;
+    cursor:pointer;
+  }
+  div#picDiv div:hover{
+    background: #ECECEC ;
+    color: #000;
+    border: 1px solid #000;
+  }
+  div#YouthPic
+  {
+      display: flex;
+      -ms-flex-flow: row wrap;
+      -webkit-flex-flow: row wrap;
+      flex-flow: row wrap;
+      padding-top:130px;
+  }
+  .modal-footer > div
+  {
+      width: 100%;
+  }
+  .bottomNav
+  {
+      display: flex;
+      cursor: pointer;
+      color:darkgrey;
+      justify-content: space-between;
+      -ms-flex-flow: row wrap;
+      -webkit-flex-flow: row wrap;
+      flex-flow: row wrap;
+  }
+  .bottomNav span:hover
+  {
+      color:#8796A0;
+  }
+  #navDiv
+  {
+      max-width: 300px;
+      border-right: 1px solid lightgrey;
+  }
+  #navDiv ul{
+      list-style: none;
+  }
+  .linav
+  {
+    padding-bottom: 5px;
+    padding-top: 5px;
+    cursor: pointer;
+    border-bottom: 1px dotted lightgrey;
+  }
+  .linav:hover
+  {
+    background: #4D2472;
+    color:#fff;
+  }
+  li.selected
+  {
+      color: #fff;
+      background:#4d2472;
+  }
+  .cssmore, .btn-secondary:hover
+  {
+      cursor: pointer;
+      background:  #4D2472;
+  }
+  .cssmore:hover
+  {
+      border: 2px dotted #4d2472;
+  }
+  div#picDiv div.selected
+  {
+      background: #fff;
+      color:#4d2472;
+      border: 1px solid #4d2472;
+  }
+  div#picData{
+    display: flex;
+    -ms-flex-flow: row wrap;
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+    flex:1;
+    justify-content: flex-start;
+    align-content: flex-start;
+    margin-top:35px;
+  }
+  div#picMain{
+      flex:1;
+  }
+  div#picMain h3{
+      text-align: left;
+      color: #4d2472;
+      margin-left: 10px;
+      position: fixed;
+      width: 100%;
+      background: #ECECEC;
+  }
+  div#picData div
+  {
+      max-width: 120px;
+      padding:10px;
+      cursor: pointer;
+  }
+  div.pic img
+  {
+      width: auto;
+      height:auto;
+  }
+  .modal-header
+  {
+      padding:0;
+      min-height: 40px;
+      margin:0;
+      height: auto;
+  }
+  .modal-header > div
+  {
+      display: flex;
+      -webkit-flex-flow: row wrap;
+      -ms-flex-flow: row wrap;
+      flex-flow: row wrap;
+      justify-content: space-between;
+      width: 100%;
+  }
+  
+  div#picMain h3.diaTitle
+  {
+      margin-top: 0;
+      color: #000;
+      text-decoration: none;
+      cursor: default;
+      width:auto;
+      margin-left:10px;
+      position: relative;
+  }
+  .modaldiv
+  {
+      text-align: center;
+  }
+  .modaldiv img
+  {
+      max-width: 100%;
+  }
+  .fa-angle-double-down, .fa-angle-double-up{
+      cursor: pointer;
+  }
+  .smallcss
+  {
+      text-align: right;
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: all 1s
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0
+  }
+  .btnClose
+  {
+      margin-left:10px;
+      margin-right: 10px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+  }
+  .btnToggle
+  {
+      margin-bottom: 10px;
+  }
+  @media (max-width:425px)
+  {
+      div#navDiv
+      {
+          margin-top:50px;
+      }
+      div#YouthPic
+      {
+          -ms-flex-flow: column;
+          -webkit-flex-flow: column;
+          flex-flow: column;
+      }
+      div#navDiv ul{
+          position: absolute;
+          background: lightgrey;
+      }
+  }
+  </style>
+  
