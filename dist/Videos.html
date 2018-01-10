@@ -20,25 +20,33 @@
         pictureNavigation:[],
         currentPicType:'',
         currentSelection:1,
-        _topPictureNav:[
+        _topVideoNav:[
           {
-              id: 1,
-              type: 'Youth Ministry'
+            text: 'Youth Ministry',
+            value: 'Youth Ministry'
           },
           {
-            id: 2,
-            type: 'Mens Ministry'
+            text: 'Mens Ministry',
+            value: 'Mens Ministry'
           },
           {
-            id: 3,
-            type: 'Ladies Ministry'
+            text: 'Ladies Ministry',
+            value: 'Ladies Ministry'
           },
           {
-            id: 4,
-            type: 'Sermons'
+            text: 'Sermons',
+            value: 'Sermons'
+          },
+          {
+            text: 'Praise & Worship',
+            value: 'Praise & Worship'
+          },
+          {
+            text: 'Other',
+            value: 'Other'
           }
         ],
-        pictureDataArray:[],
+        videoDataArray:[],
         _albumTitle:""
     },
     getters:{
@@ -76,11 +84,11 @@
         getCurrentSelection: function(state){
             return state.currentSelection;
         },
-        getTopPictureNav: function(state){
-            return state._topPictureNav;
+        getVideoNav: function(state){
+            return state._topVideoNav;
         },
-        getPictureDataArray: function(state){
-            return state.pictureDataArray;
+        getVideoDataArray: function(state){
+            return state.videoDataArray;
         },
         getAlbumTitle: function(state){
             return state._albumTitle;
@@ -96,8 +104,8 @@
         setCurrentSelection: function(state, payload){
             state.currentSelection = payload;
         },
-        setPictureDataArray: function(state, payload){
-            state.pictureDataArray = payload;
+        setVideoDataArray: function(state, payload){
+            state.videoDataArray = payload;
         },
         setAlbunmTitle: function(state, payload){
             state._albumTitle = payload;
@@ -166,9 +174,19 @@
       template:'<div id="topNav">\
                   <h1> Video Library</h1>\
                   <div id="picDiv">\
-                    <div @click="getPicture(nav.id)" v-for="nav in topNav" :class="{ selected: currentlySelected(nav.id) }">{{nav.type}}</div>\
+                    <b-input-group size="sm">\
+                        <b-form-input type="text" placeholder="Search for..." v-model="searchstring" />\
+                        <b-input-group-button>\
+                          <b-button>Go!</b-button>\
+                        </b-input-group-button>\
+                      </b-input-group>\
                   </div>\
                 </div>',
+        data: function(){
+            return {
+                searchstring:""
+            }
+        },
       methods:{
           getPicture: function(payload){
               if (store.getters.getCurrentSelection != payload)
@@ -195,23 +213,24 @@
       template:'<div id="navDiv">\
                   <div class="smallcss" v-if="smallScreen"><i class="fa fa-angle-double-down fa-2x" aria-hidden="true" title="show picture menu" @click="showItems" v-if="showcount === -1"></i><i class="fa fa-angle-double-up fa-2x" title="hide picture menu" aria-hidden="true" @click="hideItems" v-if="showcount > -1"></i>\
                   </div>\
-                      <transition-group name="fade" tag="ul">\
-                          <li class="linav" :class="{ selected: currentSelection(idx) }" v-for="(item, idx) in navItems" :title="item.name" v-show="idx < showcount" @click="getpictures(item.id, item.name, idx)" :key="item.id">{{item.name}}</li>\
-                      </transition-group>\
-                    <b-button size="sm" class="cssmore btnToggle" v-if="showmore && !smallScreen && navItems.length > 14" @click="displayMore">{{showValue}}</b-button>\
+                    <div>\
+                        <b-form-group label="Filters">\
+                            <b-form-checkbox-group stacked v-model="selected" name="flavour2" :options="navItems">\
+                            </b-form-checkbox-group>\
+                        </b-form-group>\
+                    </div>\
+                    <b-button size="sm" variant="success" @click="displayMore">GO</b-button>\
                 </div>',
       data: function(){
         return{
-            showmore:true,
-            showcount: 14,
-            showValue: 'more...',
+            selected:[],
             smallScreen: false,
             selectedX: 0
         }
       },
       computed:{
           navItems: function(){
-              return store.getters.getCurrentNavigation;
+              return store.getters.getVideoNav;
           }
       },
       methods:{
@@ -273,11 +292,18 @@
   
   var nav = Vue.component('pic-data', {
     template: '<div id="picMain">\
-                  <h3>{{albumTitle}}</h3>\
+                    <b-pagination size="md" :total-rows="100" v-model="currentPage" :per-page="10">\
+                    </b-pagination>\
                   <div id="picData">\
-                      <div class="pic" v-for="pic in pictureData">\
-                          <img :src="pic.picture" class="img-responsive" @click="showpicture(pic.images[2], pic.id)" />\
-                      </div>\
+                      <b-card-group deck title="Click to play the video">\
+                        <b-card v-for="video in videoData" :img-src="video.Image" \
+                                img-alt="Video image"\
+                                img-top>\
+                            <p class="card-text">\
+                                {{video.Title}}\
+                            </p>\
+                        </b-card>\
+                    </b-card-group>\
                   </div>\
                   <b-modal ref="modallg" size="lg" :title="albumTitle" no-close-on-backdrop >\
                       <div slot="modal-header">\
@@ -300,12 +326,13 @@
       data: function(){
           return{
               imgData:"",
-              currentID: 0
+              currentID: 0,
+              currentPage:1
           }
       },
     computed:{
-        pictureData: function(){
-            return store.getters.getPictureDataArray;
+        videoData: function(){
+            return store.getters.getVideoDataArray;
         },
         albumTitle: function(){
             return store.getters.getAlbumTitle;
@@ -358,25 +385,34 @@
           parm:''
       },
       beforeCreate: function(){
-          var access, albumid, albumname, cnt = 1;
+          var access, albumid, albumname, cnt = 1, data = [];
           axios.get("https://www.googleapis.com/youtube/v3/search",{
                params:{ channelId: 'UCsxUUddbKUKf27q3Y8iQ5Fw',
                 part: 'snippet',
                 maxResults: 50,
                 order:'date',
                 type: 'video',
-                q: 'men',
+                q: '',
                 key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'     
                }           
             }
           )
           .then(function(response){
-              if (response.data != null)
-                  access = response.data;
-          })
-          .then(function(data){
-              //var _token ="https://graph.facebook.com/v2.11/bramptontriumphant/albums?fields=name,id&access_token=" + access.access_token;
-              //getPictureNav(_token);
+              if (response.data.items.length > 0)
+              {
+                  var dt = {};
+                  response.data.items.forEach(function(item) {
+                      dt = {
+                          Title: item.snippet.title,
+                          ID: item.id.videoId,
+                          Published: item.snippet.publishedAt,
+                          Image: item.snippet.thumbnails.default.url,
+                          VideoUrl: "https://www.youtube.com/embed/"  + item.id.videoId
+                      }
+                      data.push(dt);
+                  });
+                  store.commit("setVideoDataArray",data);
+              }
           })
       }
   })
@@ -423,6 +459,7 @@
     width: 100%;
     position: fixed;
     background: #ECECEC ;
+    z-index: 1;
   }
   div#topNav h1{
     text-align: center;
@@ -437,19 +474,16 @@
     padding-bottom:10px;
   }
   div#picDiv div{
-    flex:.25;
-    text-align: center;
-    border-right: 1px solid grey;
     background: #4D2472;
     color:#fff;
-    padding:10px;
+    padding:5px;
     cursor:pointer;
   }
-  div#picDiv div:hover{
+  /* div#picDiv div:hover{
     background: #ECECEC ;
     color: #000;
     border: 1px solid #000;
-  }
+  } */
   div#YouthPic
   {
       display: flex;
@@ -480,6 +514,7 @@
   {
       max-width: 300px;
       border-right: 1px solid lightgrey;
+      position: fixed;
   }
   #navDiv ul{
       list-style: none;
@@ -528,6 +563,7 @@
   }
   div#picMain{
       flex:1;
+      margin-left: 170px;
   }
   div#picMain h3{
       text-align: left;
@@ -539,7 +575,6 @@
   }
   div#picData div
   {
-      max-width: 120px;
       padding:10px;
       cursor: pointer;
   }
@@ -606,6 +641,27 @@
   .btnToggle
   {
       margin-bottom: 10px;
+  }
+  .card-deck .card
+  {
+      flex: none !important;
+      margin-bottom:10px;
+      width:250px;
+  }
+  .card-text
+  {
+      font-size:.9rem;
+  }
+  .card{
+      margin-bottom:10px;
+  }
+  .pagination
+  {
+      position: fixed;
+  }
+  .pagination
+  {
+      z-index: 1;
   }
   @media (max-width:425px)
   {
