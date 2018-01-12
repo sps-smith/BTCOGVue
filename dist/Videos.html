@@ -47,7 +47,7 @@
           }
         ],
         videoDataArray:[],
-        _albumTitle:""
+        _videocount:0
     },
     getters:{
         getPictureNavigation: function(state){
@@ -90,8 +90,8 @@
         getVideoDataArray: function(state){
             return state.videoDataArray;
         },
-        getAlbumTitle: function(state){
-            return state._albumTitle;
+        getVideoCount: function(state){
+            return state._videocount;
         }
     },
     mutations:{
@@ -107,8 +107,11 @@
         setVideoDataArray: function(state, payload){
             state.videoDataArray = payload;
         },
-        setAlbunmTitle: function(state, payload){
-            state._albumTitle = payload;
+        setVideoCount: function(state, payload){
+            state._videocount = payload;
+        },
+        updateVideoDataArray: function(state, payload){
+            Array.prototype.push.apply(state.videoDataArray, payload);
         }
     },
     actions:{
@@ -292,34 +295,33 @@
   
   var nav = Vue.component('pic-data', {
     template: '<div id="picMain">\
-                    <b-pagination size="md" :total-rows="100" v-model="currentPage" :per-page="10">\
+                    <b-pagination align="center" size="md" :total-rows="vcount" v-model="currentPage" :per-page="10">\
                     </b-pagination>\
                   <div id="picData">\
-                      <b-card-group deck title="Click to play the video">\
-                        <b-card v-for="video in videoData" :img-src="video.Image" \
-                                img-alt="Video image"\
+                    <b-card-group deck title="Click to play the video">\
+                        <b-card v-for="(video, idx) in videoData" :img-src="video.Image" :key="idx"\
+                                img-alt="Video image" v-show="iscurrentpage(video.PageID)" @click="playvideo(video.VideoUrl, video.Title)"\
                                 img-top>\
                             <p class="card-text">\
                                 {{video.Title}}\
                             </p>\
+                            <div class="play">\
+                                <img src="http://cdn1.iconfinder.com/data/icons/flavour/button_play_blue.png"/>\
+                            </div>\
                         </b-card>\
                     </b-card-group>\
                   </div>\
-                  <b-modal ref="modallg" size="lg" :title="albumTitle" no-close-on-backdrop >\
+                  <b-modal ref="modallg" size="lg" no-close-on-backdrop >\
                       <div slot="modal-header">\
-                          <h3 class="diaTitle">{{albumTitle}}</h3>\
                           <b-btn size="sm" class="btnClose" variant="primary" @click="hidepicture">\
                               Close\
                           </b-btn>\
                       </div>\
                       <div class="modaldiv">\
-                          <img :src="imgData" />\
+                          <iframe class="videocss embed-responsive-item" width="100%" :src="videourl" frameborder="0" allowfullscreen></iframe>\
                       </div>\
                       <div slot="modal-footer">\
-                          <div class="bottomNav">\
-                              <span class="prev" title="previous" @click="gotopic(1)"><i class="fa fa-backward fa-2x" aria-hidden="true"></i></span>\
-                              <span class="next" title="next"  @click="gotopic(2)"><i class="fa fa-forward fa-2x" aria-hidden="true"></i></span>\
-                          </div>\
+                          <p style="text-align:center">{{videotitle}}</p>\
                       </div>\
                   </b-modal>\
               </div>',
@@ -327,25 +329,36 @@
           return{
               imgData:"",
               currentID: 0,
-              currentPage:1
+              currentPage:1,
+              videourl:"",
+              videotitle:""
           }
       },
     computed:{
         videoData: function(){
             return store.getters.getVideoDataArray;
         },
-        albumTitle: function(){
-            return store.getters.getAlbumTitle;
+        vcount: function(){
+            return store.getters.getVideoCount;
         }
     },
     methods:{
-        showpicture: function(payload, payload1){
-              this.imgData = payload.source;
-              this.currentID = payload1;
+        iscurrentpage: function(payload){
+            var pend = this.currentPage * 10;
+            var pstart = (pend - 10) + 1;
+            if (payload >= pstart && payload <= pend)
+                return true;
+            return false;
+        },
+        playvideo: function(payload, payload1){
+              this.videourl = payload + "?autoplay=1";
+              this.videotitle = payload1;
               this.$refs.modallg.show();
         },
         hidepicture: function(){
-              this.$refs.modallg.hide();
+            this.videourl = "";
+            this.videotitle = "";
+            this.$refs.modallg.hide();
         },
         gotopic: function(payload){
               var wrkdata = this.pictureData;
@@ -385,7 +398,7 @@
           parm:''
       },
       beforeCreate: function(){
-          var access, albumid, albumname, cnt = 1, data = [];
+          var data = [];
           axios.get("https://www.googleapis.com/youtube/v3/search",{
                params:{ channelId: 'UCsxUUddbKUKf27q3Y8iQ5Fw',
                 part: 'snippet',
@@ -401,37 +414,62 @@
               if (response.data.items.length > 0)
               {
                   var dt = {};
-                  response.data.items.forEach(function(item) {
+                  response.data.items.forEach(function(item, index) {
                       dt = {
+                          PageID: index+1,
                           Title: item.snippet.title,
                           ID: item.id.videoId,
                           Published: item.snippet.publishedAt,
-                          Image: item.snippet.thumbnails.default.url,
+                          Image: item.snippet.thumbnails.medium.url,
                           VideoUrl: "https://www.youtube.com/embed/"  + item.id.videoId
                       }
                       data.push(dt);
                   });
                   store.commit("setVideoDataArray",data);
+                  store.commit("setVideoCount",data.length);
+                  if (response.data.nextPageToken != null)
+                        getVideos("", response.data.nextPageToken, response.data.items.length);
               }
           })
       }
   })
   
-  function getPictureNav(access_token){
-      axios.get(
-        access_token, {
-        headers: { "Accept": "application/json; odata=verbose" }
-      })
-      .then(function(response) {
-          store.dispatch("setNavigationAction", response.data.data);
-          if (response.data.paging.next != undefined)
-              getPictureNav(response.data.paging.next)
-          else
-          {
-              store.commit('setCurrentNavigation', "Youth");
-              store.dispatch('getPictures', "");
-          }
-      })
+  function getVideos(key, token, rec){
+    var data = [];
+    axios.get("https://www.googleapis.com/youtube/v3/search",{
+            params:{ channelId: 'UCsxUUddbKUKf27q3Y8iQ5Fw',
+            part: 'snippet',
+            maxResults: 50,
+            pageToken: token,
+            order:'date',
+            type: 'video',
+            q: key,
+            key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'     
+            }           
+        }
+    )
+    .then(function(response){
+        if (response.data.items.length > 0)
+        {
+            var dt = {};
+            response.data.items.forEach(function(item, index) {
+                dt = {
+                    PageID: rec+index+1,
+                    Title: item.snippet.title,
+                    ID: item.id.videoId,
+                    Published: item.snippet.publishedAt,
+                    Image: item.snippet.thumbnails.medium.url,
+                    VideoUrl: "https://www.youtube.com/embed/"  + item.id.videoId
+                }
+                data.push(dt);
+            });
+            store.commit("updateVideoDataArray",data);
+            store.commit("setVideoCount",response.data.items.length + rec);
+            if (response.data.nextPageToken != null)
+                getVideos("", response.data.nextPageToken, response.data.items.length + rec);
+            
+        }
+    })
   }
   
   function getParameterByName(name) {
@@ -663,6 +701,23 @@
   {
       z-index: 1;
   }
+  .play{
+        position : absolute;
+        display:none;
+        top:20%; 
+        width:40px;
+        margin:0 auto; left:0px;
+        right:0px;
+        z-index:100
+    } 
+    .card-deck .card:hover
+    {
+        opacity: .8;
+    }
+    .card-deck .card:hover .play
+    {
+        display: block;
+    }
   @media (max-width:425px)
   {
       div#navDiv
