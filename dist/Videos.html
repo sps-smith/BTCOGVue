@@ -15,11 +15,6 @@
 
 var store = new Vuex.Store({
 state:{
-    clientid: '1557432777878480',
-    clientSecret: '5f6a0d247f01fc20a2d1dc2bf69b040',
-    pictureNavigation:[],
-    currentPicType:'',
-    currentSelection:1,
     _topVideoNav:[
         {
         text: 'Youth Ministry',
@@ -51,40 +46,6 @@ state:{
     _videocount:0
 },
 getters:{
-    getPictureNavigation: function(state){
-        return state.pictureNavigation;
-    },
-    getCurrentNavigation: function(state){
-        if (state.currentPicType == "Youth")
-        {
-            return state.pictureNavigation.filter(function(item){
-                return item.name.toLowerCase().indexOf("youth") > -1;
-            });
-        }
-        if (state.currentPicType == "Men")
-        {
-            return state.pictureNavigation.filter(function(item){
-                return item.name.toLowerCase().indexOf("men") > -1 && item.name.toLowerCase().indexOf("women") == -1 || 
-                item.name.toLowerCase().indexOf("revival") > -1;
-            });
-        }
-        if (state.currentPicType == "Women")
-        {
-            return state.pictureNavigation.filter(function(item){
-                return item.name.toLowerCase().indexOf("women") > -1 || item.name.toLowerCase().indexOf("lad") > -1 || item.name.toLowerCase().indexOf("mother") > -1;
-            });
-        }
-        if (state.currentPicType == "Other")
-        {
-            return state.pictureNavigation.filter(function(item){
-                return item.name.toLowerCase().indexOf("pastor john walker") > -1 || item.name.toLowerCase().indexOf("general convention") > -1 || item.name.toLowerCase().indexOf("rally") > -1;
-            });
-        }
-
-    },
-    getCurrentSelection: function(state){
-        return state.currentSelection;
-    },
     getVideoNav: function(state){
         return state._topVideoNav;
     },
@@ -96,15 +57,6 @@ getters:{
     }
 },
 mutations:{
-    setPictureNavigation: function(state, payload){
-        state.pictureNavigation = payload;
-    },
-    setCurrentNavigation: function(state, payload){
-        state.currentPicType = payload;
-    },
-    setCurrentSelection: function(state, payload){
-        state.currentSelection = payload;
-    },
     setVideoDataArray: function(state, payload){
         state.videoDataArray = payload;
     },
@@ -122,63 +74,8 @@ mutations:{
     }
 },
 actions:{
-    setNavigationAction: function(context, payload){
-        var data = context.getters.getPictureNavigation;
-        if (data.length == 0)
-            context.commit("setPictureNavigation", payload);
-        else
-        {
-            Array.prototype.push.apply(data, payload);
-            context.commit("setPictureNavigation", data);
-        }
-    },
-    getPictures: function(context, payload){
-        var _id;
-        if (payload == "")
-        {
-                _id = context.getters.getCurrentNavigation[0].id;
-                context.commit("setAlbunmTitle", context.getters.getCurrentNavigation[0].name);
-        }
-        else{
-                _id = payload.parm1;
-                context.commit("setAlbunmTitle", payload.parm2);
-        }
-        var access;
-        axios.get("https://graph.facebook.com/v2.11/oauth/access_token?client_id=1557432777878480&client_secret=5f6a0d247f01fc20a2d1dc2bf69b040d&grant_type=client_credentials", {
-            headers: { "Accept": "application/json; odata=verbose" }
-        })
-        .then(function (response) {
-            if (response.data != null)
-            access = response.data;
-        })
-        .then(function(data){
-            axios.get("https://graph.facebook.com/v2.11/" + _id + "/photos?fields=picture,images&access_token=" + access.access_token, {
-                headers: { "Accept": "application/json; odata=verbose" }
-            })
-            .then(function (response) {
-                context.commit("setPictureDataArray", response.data.data);
-            })
-        })
-    },
-    getSelectedPictureLibrary: function(context){
-        switch(context.state.currentSelection){
-                case 1:
-                    context.commit('setCurrentNavigation', "Youth");
-                    break;
-                case 2:
-                    context.commit('setCurrentNavigation', "Men");
-                    break;
-                case 3:
-                    context.commit('setCurrentNavigation', "Women");
-                    break;
-                case 4:
-                    context.commit('setCurrentNavigation', "Other");
-                    break;
-        }
-        context.dispatch("getPictures","");
-    },
     FilterVideos: function(context, payload){
-        var data = [];
+        var data = [], mapArray = [], wrkArray = [];
         if (context.state.wrkDataArray.length == 0)
             context.commit("setWrkDataArray", context.state.videoDataArray);
 
@@ -199,15 +96,104 @@ actions:{
                 {
                     data = context.state.wrkDataArray.filter(function(item){
                         return item.Title.toLowerCase().indexOf("men") > -1 && item.Title.toLowerCase().indexOf("women") == -1;
-                    })
-                    data.forEach(function(item, idx){
-                        item.PageID = idx+1;
-                    })
-                    context.commit("setVideoDataArray", data);
-                    context.commit("setVideoCount", data.length);
+                    });
                 }
+
+                if (st == "youth")
+                {
+                    data = context.state.wrkDataArray.filter(function(item){
+                        return item.Title.toLowerCase().indexOf("youth") > -1 || item.Title.toLowerCase().indexOf("triumphant in motion") > -1;
+                    });
+                }
+
+                if (st == "ladies")
+                {
+                    data = context.state.wrkDataArray.filter(function(item){
+                        return item.Title.toLowerCase().indexOf("ladies") > -1 || item.Title.toLowerCase().indexOf("women") > -1;
+                    });                                   
+                }
+
+                if (st == "sermon")
+                {
+                    data = context.state.wrkDataArray.filter(function(item){
+                        return item.Title.toLowerCase().indexOf("sermon") > -1;
+                    });                                   
+                }
+
+                if (st == "praise")
+                {
+                    data = context.state.wrkDataArray.filter(function(item){
+                        return item.Title.toLowerCase().indexOf("praise") > -1 && item.Title.toLowerCase().indexOf("worship") > -1;
+                    });                                   
+                }
+
+                if (st == "other")
+                {
+                    data = context.state.wrkDataArray.filter(function(item){
+                        return item.Title.toLowerCase().indexOf("praise") == -1 && item.Title.toLowerCase().indexOf("sermon") == -1 && item.Title.toLowerCase().indexOf("men") == -1 && item.Title.toLowerCase().indexOf("ladies") == -1 && item.Title.toLowerCase().indexOf("youth") == -1;
+                    });                                   
+                }
+
+                var found = false;
+                data.forEach(function(dta){
+                    found = false;
+                    $.each(mapArray, function(xm, item){
+                        if (dta.ID == item.ID)
+                        {
+                            found = true;
+                            return false;
+                        }
+                    });
+                    if (!found)
+                        mapArray.push(dta);
+                });     
             })
+            mapArray.forEach(function(item, idx){
+                item.PageID = idx+1;
+            })
+            mapArray.sort(function(a,b){
+                return a.PageID > b.PageID;
+            })
+            context.commit("setVideoDataArray", mapArray);
+            context.commit("setVideoCount", mapArray.length);
         }
+    },
+    getSearchResults: function(context, payload){
+        var data =[];
+        axios.get("https://www.googleapis.com/youtube/v3/search",{
+            params:{ channelId: 'UCsxUUddbKUKf27q3Y8iQ5Fw',
+            part: 'snippet',
+            maxResults: 50,
+            order:'date',
+            type: 'video',
+            q: payload,
+            key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'     
+            }           
+        })
+        .then(function(response){
+            if (response.data.items.length > 0)
+            {
+                var dt = {};
+                response.data.items.forEach(function(item, index) {
+                    dt = {
+                        PageID: index+1,
+                        Title: item.snippet.title,
+                        ID: item.id.videoId,
+                        Published: item.snippet.publishedAt,
+                        Image: item.snippet.thumbnails.medium.url,
+                        VideoUrl: "https://www.youtube.com/embed/"  + item.id.videoId
+                    }
+                    data.push(dt);
+                });
+                store.commit("setVideoDataArray",data);
+                store.commit("setVideoCount",data.length);
+                if (response.data.nextPageToken != null)
+                    getVideos(payload, response.data.nextPageToken, response.data.items.length);
+            }
+        })
+    },
+    ClearSearchResults: function(context){
+        context.dispatch("getSearchResults","");
     }
 }
 })
@@ -217,10 +203,10 @@ var topNav = Vue.component('top-nav',{
                 <h1> Video Library</h1>\
                 <div id="picDiv">\
                 <b-input-group size="sm">\
-                    <b-form-input type="text" placeholder="Search for..." v-model="searchstring" />\
+                    <b-form-input type="text" placeholder="Search for..." v-model="searchstring" @keyup.13="searchvideo" />\
                     <b-input-group-button>\
-                        <b-button>Go!</b-button>\
-                        <b-button>Clear</b-button>\
+                        <b-button variant="success" @click="searchvideo">Search</b-button>\
+                        <b-button variant="warning" @click="clearvideo">Clear</b-button>\
                     </b-input-group-button>\
                     </b-input-group>\
                 </div>\
@@ -231,44 +217,45 @@ var topNav = Vue.component('top-nav',{
         }
     },
     methods:{
-        getPicture: function(payload){
-            if (store.getters.getCurrentSelection != payload)
+        searchvideo: function(){
+            if (this.searchstring != "")
             {
-                store.commit('setCurrentSelection', payload)
-                store.dispatch("getSelectedPictureLibrary")
+                store.dispatch("getSearchResults", this.searchstring);
                 $('#s4-workspace').scrollTop(0);
             }
         },
-        currentlySelected: function (payload) {
-        if (store.getters.getCurrentSelection === payload)
-            return true
-        return false;
+        clearvideo: function () {
+            if (this.searchstring != "")
+            {
+                this.searchstring = "";
+                store.dispatch("ClearSearchResults");
+                $('#s4-workspace').scrollTop(0);
+            }
         },
     },
-    computed:{
-        topNav: function(){
-            return store.getters.getTopPictureNav;
-        }
-    }
 })
 
 var nav = Vue.component('pic-nav',{
     template:'<div id="navDiv">\
-                <div class="smallcss" v-if="smallScreen"><i class="fa fa-angle-double-down fa-2x" aria-hidden="true" title="show picture menu" @click="showItems" v-if="showcount === -1"></i><i class="fa fa-angle-double-up fa-2x" title="hide picture menu" aria-hidden="true" @click="hideItems" v-if="showcount > -1"></i>\
+                <div class="smallcss" v-if="smallScreen"><i class="fa fa-angle-double-down fa-2x" aria-hidden="true" title="show picture menu" @click="showItems" v-if="showcount == 0"></i><i class="fa fa-angle-double-up fa-2x" title="hide picture menu" aria-hidden="true" @click="hideItems" v-if="showcount == 1"></i>\
                 </div>\
-                <div>\
-                    <b-form-group label="Filters">\
-                        <b-form-checkbox-group stacked v-model="selected" name="flavour2" :options="navItems">\
-                        </b-form-checkbox-group>\
+                <div class="filterscss">\
+                    <b-form-group :label="labeltitle">\
+                        <transition name="fade">\
+                            <b-form-checkbox-group stacked v-model="selected" name="flavour2" v-show="!smallScreen || smallScreen && showcount == 1" :options="navItems">\
+                            </b-form-checkbox-group>\
+                        </transition>\
                     </b-form-group>\
                 </div>\
             </div>',
     data: function(){
-    return{
-        selected:[],
-        smallScreen: false,
-        selectedX: 0
-    }
+        return{
+            selected:[],
+            smallScreen: false,
+            selectedX: 0,
+            showcount: 0,
+            labeltitle: "Filters"
+        }
     },
     computed:{
         navItems: function(){
@@ -276,46 +263,31 @@ var nav = Vue.component('pic-nav',{
         }
     },
     methods:{
-    getpictures: function(payload, payload1, payload2){
-            store.dispatch('getPictures', { parm1: payload, parm2 : payload1});
-            if (this.smallScreen)
-                this.showcount = -1;
-            this.selectedX = payload2;
-            $('#s4-workspace').scrollTop(0);
-    },
-    handleWindowResize: function(event){
-            if (event.currentTarget.innerWidth <= 425)
-            {
-                this.showcount = -1;
-                this.smallScreen = true;
-            }
-            else
-            {
-                this.showcount = 14;
-                this.smallScreen = false;
-            }
-    },
-    showItems: function(){
-        this.showcount = this.navItems.length;
-    },
-    hideItems: function(){
-        this.showcount = -1;
-    },
-    currentSelection: function(payload){
-            if (this.selectedX == payload)
-                return true;
-            return false;
-    }
+        handleWindowResize: function(event){
+                if (event.currentTarget.innerWidth <= 425)
+                {
+                    this.smallScreen = true;
+                    this.labeltitle = ""
+                }
+                else
+                {
+                    this.smallScreen = false;
+                    this.labeltitle = "Filters"
+                }
+        },
+        showItems: function(){
+            this.showcount = 1;
+            this.labeltitle = "Filters"
+        },
+        hideItems: function(){
+            this.showcount = 0;
+            this.labeltitle = ""
+        }
     },
     mounted: function(){
         window.addEventListener('resize', this.handleWindowResize);
     },
     watch: {
-        navItems: function(){
-            this.selectedX = 0;
-            this.showcount = 14,
-            this.showValue = 'more...';
-        },
         selected: function(){
             store.dispatch("FilterVideos",this.selected);
         }
@@ -327,18 +299,19 @@ var nav = Vue.component('pic-data', {
                 <b-pagination align="center" size="md" :total-rows="vcount" v-model="currentPage" :per-page="10">\
                 </b-pagination>\
                 <div id="picData">\
-                <b-card-group deck title="Click to play the video">\
-                    <b-card v-for="(video, idx) in videoData" :img-src="video.Image" :key="idx"\
-                            img-alt="Video image" v-show="iscurrentpage(video.PageID)" @click="playvideo(video.VideoUrl, video.Title)"\
-                            img-top>\
-                        <p class="card-text">\
-                            {{video.Title}}\
-                        </p>\
-                        <div class="play">\
-                            <img src="http://cdn1.iconfinder.com/data/icons/flavour/button_play_blue.png"/>\
-                        </div>\
-                    </b-card>\
-                </b-card-group>\
+                    <b-card-group deck title="Click to play the video">\
+                        <b-card v-for="(video, idx) in videoData" :img-src="video.Image" :key="idx"\
+                                img-alt="Video image" v-show="iscurrentpage(video.PageID)" @click="playvideo(video.VideoUrl, video.Title)"\
+                                img-top>\
+                            <p class="card-text">\
+                                {{video.Title}}\
+                            </p>\
+                            <div class="play">\
+                                <img src="http://cdn1.iconfinder.com/data/icons/flavour/button_play_blue.png"/>\
+                            </div>\
+                        </b-card>\
+                    </b-card-group>\
+                    <h3 v-show="vcount == 0">No video data found</h3>\
                 </div>\
                 <b-modal ref="modallg" size="lg" no-close-on-backdrop >\
                     <div slot="modal-header">\
@@ -356,8 +329,6 @@ var nav = Vue.component('pic-data', {
             </div>',
     data: function(){
         return{
-            imgData:"",
-            currentID: 0,
             currentPage:1,
             videourl:"",
             videotitle:""
@@ -389,39 +360,13 @@ var nav = Vue.component('pic-data', {
             this.videotitle = "";
             this.$refs.modallg.hide();
         },
-        gotopic: function(payload){
-                var wrkdata = this.pictureData;
-                var _cid = this.currentID;
-                var dt ={};
-                $.each(wrkdata, function(x, item){
-                    if (item.id == _cid)
-                    {                    
-                        if (payload == 1)
-                        {
-                            if (x == 0)
-                                dt = wrkdata[wrkdata.length-1];
-                            else
-                                dt = wrkdata[x-1];
-                        }
-
-                        if (payload == 2)
-                        {
-                            if (x == wrkdata.length-1)
-                                dt = wrkdata[0];
-                            else
-                                dt = wrkdata[x+1];
-
-                        }
-                        return false;
-                    }
-                });
-                this.imgData = dt.images[2].source;
-                this.currentID = dt.id;
-        }
     },
     watch:{
         vcount: function(){
             this.currentPage = 1;
+        },
+        currentPage: function(){
+            $('#s4-workspace').scrollTop(0);
         }
     }
 })
@@ -442,8 +387,7 @@ var app = new Vue({
             q: '',
             key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'     
             }           
-        }
-        )
+        })
         .then(function(response){
             if (response.data.items.length > 0)
             {
@@ -459,7 +403,6 @@ var app = new Vue({
                     }
                     data.push(dt);
                 });
-                //store.commit("setWrkDataArray",data);
                 store.commit("setVideoDataArray",data);
                 store.commit("setVideoCount",data.length);
                 if (response.data.nextPageToken != null)
@@ -523,25 +466,13 @@ function getVideos(key, token, rec){
                 }
                 data.push(dt);
             });
-            //store.commit("updateWrkDataArray",data);
             store.commit("updateVideoDataArray",data);
             store.commit("setVideoCount",response.data.items.length + rec);
             if (response.data.nextPageToken != null)
-                getVideos("", response.data.nextPageToken, response.data.items.length + rec);
+                getVideos(key, response.data.nextPageToken, response.data.items.length + rec);
             
         }
     })
-}
-
-function getParameterByName(name) {
-name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-var regexString = "[\\?&]" + name + "=([^&#]*)";
-var regex = new RegExp(regexString);
-var found = regex.exec(window.location.search);
-if (found == null)
-    return "";
-else
-    return decodeURIComponent(found[1].replace(/\+/g, " "));
 }
 
 </script>
@@ -550,10 +481,6 @@ else
 <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
 
 <style>
-div#divtopNav
-{
-    padding-left: 10px;
-}
 div#topNav{
     width: 100%;
     position: fixed;
@@ -569,8 +496,8 @@ div#picDiv{
     -ms-flex-flow: row wrap;
     -webkit-flex-flow: row wrap;
     flex-flow: row wrap;
-    padding-top:10px;
-    padding-bottom:10px;
+    padding:10px;
+
 }
 div#picDiv div{
     color:#fff;
@@ -608,6 +535,9 @@ div#YouthPic
     max-width: 300px;
     border-right: 1px solid lightgrey;
     position: fixed;
+    padding-left:15px;
+    z-index: 1;
+    background: #ECECEC;
 }
 #navDiv ul{
     list-style: none;
@@ -656,7 +586,7 @@ div#picData{
 }
 div#picMain{
     flex:1;
-    margin-left: 170px;
+    margin-left: 180px;
 }
 div#picMain h3{
     text-align: left;
@@ -751,10 +681,8 @@ opacity: 0
 .pagination
 {
     position: fixed;
-}
-.pagination
-{
     z-index: 1;
+    padding-left: 10px;
 }
 .play{
     position : absolute;
@@ -781,7 +709,9 @@ div.input-group input[type=text]
 {
     div#navDiv
     {
-        margin-top:50px;
+        margin-top:-35px;
+        border-right: none;
+        right: 15px;
     }
     div#YouthPic
     {
@@ -789,9 +719,20 @@ div.input-group input[type=text]
         -webkit-flex-flow: column;
         flex-flow: column;
     }
-    div#navDiv ul{
-        position: absolute;
-        background: lightgrey;
+    div#navDiv .filterscss{
+        background: #ECECEC;
+        margin-top: 40px;
+    }
+    div#picMain
+    {
+        margin-left:10px;
+    }
+}
+@media (max-width:1024px)
+{
+    div#YouthPic
+    {
+        padding-top: 150px;
     }
 }
 </style>
