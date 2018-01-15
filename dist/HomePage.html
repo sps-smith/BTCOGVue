@@ -7,7 +7,7 @@
 	}
 </style>
 <div id="homePage">
-    <home-page-slider :images="imagesAry" :album-name="albumn"></home-page-slider>  
+    <home-page-slider :images="imagesAry" :album-name="albumn"></home-page-slider>
     <btcog-information></btcog-information>
     <banner></banner>
     <btcog-events :events-data="events"></btcog-events>
@@ -67,7 +67,7 @@ Vue.component("home-page-slider", {
             if (vl == this.activeIndex)
                 return true;
             else
-                return false;        
+                return false;
         }
     }
 });
@@ -170,7 +170,7 @@ var vm = new Vue({
             success: function (data) {
                 if (data != null) {
                     access = data;
-                }               
+                }
             },
             error: function (data) {
                 alert("Error in retrieving user news channels");
@@ -185,7 +185,7 @@ var vm = new Vue({
                             if (cnt == 1)
                             {
                                 $.each(item, function (x, dta) {
-                                    if (x == 1) {                            
+                                    if (x == 1) {
                                         albumid = dta.id;
                                         vm.albumn = dta.name;
                                         return false;
@@ -199,11 +199,11 @@ var vm = new Vue({
 
                         if (albumid != "") {
                             $.getJSON(
-                                "https://graph.facebook.com/v2.8/" + albumid + "/photos?fields=images&access_token=" + access.access_token,                  
+                                "https://graph.facebook.com/v2.8/" + albumid + "/photos?fields=images&access_token=" + access.access_token,
 
                                 function (data) {
-                                    $.each(data.data, function (i, item) {                                
-                                        vm.imagesAry.push(item.images[4].source);                        
+                                    $.each(data.data, function (i, item) {
+                                        vm.imagesAry.push(item.images[4].source);
                                     });
                                 }
                             );
@@ -220,7 +220,7 @@ var vm = new Vue({
                         if (data != null)
                         {
                             var allTextLines = data.split(/\r\n|\n/);
-                            var lines = []; 
+                            var lines = [];
 
                             for (var i=0; i<allTextLines.length; i++) {
                                 var item = allTextLines[i].split(',');
@@ -245,7 +245,7 @@ var vm = new Vue({
                     var end = getWeekEndDate();
                     var wrk = {};
                     $.ajax({
-                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getbytitle('btcog events')/items?$filter=(Start_x0020_Date ge datetime'" + start + "') and (End_x0020_Date le datetime'" + end + "')&$orderby=Start_x0020_Date desc",
+                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getbytitle('btcog events')/items?$filter=(StartDate ge datetime'" + start + "') and (EndDate le datetime'" + end + "')&$orderby=StartDate desc",
                         type: "GET",
                         headers: { "Accept": "application/json; odata=verbose" },
                         success: function (data) {
@@ -255,8 +255,8 @@ var vm = new Vue({
                                     wrk = {
                                         Title: item.Title,
                                         Location: item.Location,
-                                        StartDate: new Date(item.Start_x0020_Date).toDateString() + " " + new Date(item.Start_x0020_Date).toLocaleTimeString(),
-                                        EndDate: new Date(item.End_x0020_Date).toDateString() + " " + new Date(item.End_x0020_Date).toLocaleTimeString()
+                                        StartDate: new Date(item.StartDate).toDateString() + " " + new Date(item.StartDate).toLocaleTimeString(),
+                                        EndDate: new Date(item.EndDate).toDateString() + " " + new Date(item.EndDate).toLocaleTimeString()
                                     }
 	                	            vm.weeklyevents.push(wrk);
                                 });
@@ -296,15 +296,15 @@ var vm = new Vue({
 
 function getWeekStartDate ()
 {
-    
+
     var d = new Date();
-    
+
     // Sunday
-    if (d.getDay() === 0) 
+    if (d.getDay() === 0)
         return d.addDays(-1).toString("yyyy-MM-dd")+"T00:00:00";
         //return d.toString("yyyy-MM-dd")+"T00:00:00";
     else
-        return d.addDays((d.getDay()-1) * -1).toString("yyyy-MM-dd")+"T00:00:00";	
+        return d.addDays((d.getDay()-1) * -1).toString("yyyy-MM-dd")+"T00:00:00";
 }
 
 function getWeekEndDate ()
@@ -312,7 +312,7 @@ function getWeekEndDate ()
     var d = new Date();
 
     // Sunday
-    if (d.getDay() === 6) 
+    if (d.getDay() === 6)
         return d.addDays(1).toString("yyyy-MM-dd")+"T00:00:00";
         //return d.toString("yyyy-MM-dd")+"T00:00:00";
     else
@@ -492,11 +492,11 @@ div.thisweek tr td
     div.thisweek h1
     {
         text-align: center;
-    }    
+    }
 }
 @media (max-width: 425px)
 {
-    
+
     div.thisweek thead tr{
         display: none;
     }

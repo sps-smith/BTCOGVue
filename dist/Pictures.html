@@ -55,7 +55,7 @@ var store = new Vuex.Store({
           if (state.currentPicType == "Men")
           {
               return state.pictureNavigation.filter(function(item){
-                  return item.name.toLowerCase().indexOf("men") > -1 && item.name.toLowerCase().indexOf("women") == -1 || 
+                  return item.name.toLowerCase().indexOf("men") > -1 && item.name.toLowerCase().indexOf("women") == -1 ||
                   item.name.toLowerCase().indexOf("revival") > -1;
               });
           }
@@ -326,7 +326,7 @@ var nav = Vue.component('pic-data', {
             var dt ={};
             $.each(wrkdata, function(x, item){
                 if (item.id == _cid)
-                {                    
+                {
                     if (payload == 1)
                     {
                         if (x == 0)
@@ -599,6 +599,7 @@ div#picMain h3.diaTitle
 {
     margin-bottom: 10px;
 }
+
 @media (max-width:425px)
 {
     div#navDiv

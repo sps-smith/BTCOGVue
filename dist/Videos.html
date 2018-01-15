@@ -88,7 +88,7 @@ actions:{
             context.commit("setVideoDataArray", data);
             context.commit("setVideoCount",data.length);
         }
-        else 
+        else
         {
             payload.forEach(function(item){
                 var st = getfilter(item);
@@ -110,28 +110,28 @@ actions:{
                 {
                     data = context.state.wrkDataArray.filter(function(item){
                         return item.Title.toLowerCase().indexOf("ladies") > -1 || item.Title.toLowerCase().indexOf("women") > -1;
-                    });                                   
+                    });
                 }
 
                 if (st == "sermon")
                 {
                     data = context.state.wrkDataArray.filter(function(item){
                         return item.Title.toLowerCase().indexOf("sermon") > -1;
-                    });                                   
+                    });
                 }
 
                 if (st == "praise")
                 {
                     data = context.state.wrkDataArray.filter(function(item){
                         return item.Title.toLowerCase().indexOf("praise") > -1 && item.Title.toLowerCase().indexOf("worship") > -1;
-                    });                                   
+                    });
                 }
 
                 if (st == "other")
                 {
                     data = context.state.wrkDataArray.filter(function(item){
                         return item.Title.toLowerCase().indexOf("praise") == -1 && item.Title.toLowerCase().indexOf("sermon") == -1 && item.Title.toLowerCase().indexOf("men") == -1 && item.Title.toLowerCase().indexOf("ladies") == -1 && item.Title.toLowerCase().indexOf("youth") == -1;
-                    });                                   
+                    });
                 }
 
                 var found = false;
@@ -146,7 +146,7 @@ actions:{
                     });
                     if (!found)
                         mapArray.push(dta);
-                });     
+                });
             })
             mapArray.forEach(function(item, idx){
                 item.PageID = idx+1;
@@ -167,8 +167,8 @@ actions:{
             order:'date',
             type: 'video',
             q: payload,
-            key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'     
-            }           
+            key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'
+            }
         })
         .then(function(response){
             if (response.data.items.length > 0)
@@ -385,8 +385,8 @@ var app = new Vue({
             order:'date',
             type: 'video',
             q: '',
-            key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'     
-            }           
+            key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'
+            }
         })
         .then(function(response){
             if (response.data.items.length > 0)
@@ -413,7 +413,7 @@ var app = new Vue({
 })
 
 function getfilter(ary){
-    var str = "";    
+    var str = "";
     switch(ary){
         case "Youth Ministry":
             str = "youth";
@@ -447,8 +447,8 @@ function getVideos(key, token, rec){
             order:'date',
             type: 'video',
             q: key,
-            key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'     
-            }           
+            key:'AIzaSyDkgebyCfU-qBw5aXYUu-KgU2_O6cnp2j4'
+            }
         }
     )
     .then(function(response){
@@ -470,13 +470,13 @@ function getVideos(key, token, rec){
             store.commit("setVideoCount",response.data.items.length + rec);
             if (response.data.nextPageToken != null)
                 getVideos(key, response.data.nextPageToken, response.data.items.length + rec);
-            
+
         }
     })
 }
 
 </script>
-  
+
 <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap@next/dist/css/bootstrap.min.css"/>
 <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
 
@@ -687,12 +687,16 @@ opacity: 0
 .play{
     position : absolute;
     display:none;
-    top:20%; 
+    top:20%;
     width:40px;
     margin:0 auto; left:0px;
     right:0px;
     z-index:100
-} 
+}
+.card-deck
+{
+    width:100%;
+}
 .card-deck .card:hover
 {
     opacity: .8;
