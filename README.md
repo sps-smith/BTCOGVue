@@ -1,5 +1,7 @@
 # BTCOGVue
 
+SPA application using Vuejs on SharePoint
+
 Home Page Components
   - Carousel
   
